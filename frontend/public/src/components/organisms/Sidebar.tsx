@@ -1,25 +1,20 @@
 "use client"
 
 import * as React from "react"
+
 import {
-  Camera,           // Lucide equivalent for IconCamera
-  BarChart,         // Lucide equivalent for IconChartBar
-  LayoutDashboard,  // Lucide equivalent for IconDashboard
-  Database,         // Lucide equivalent for IconDatabase
-  FileText,         // Lucide equivalent for IconFileDescription (often used for docs)
-  FilePenLine,      // Lucide equivalent for IconFileWord (could also be FileEdit or FileText)
-  Folder,           // Lucide equivalent for IconFolder
-  HelpCircle,       // Lucide equivalent for IconHelp
-  Layers,           // Lucide equivalent for IconInnerShadowTop (or SquareStack, depending on desired visual)
-  List,             // Lucide equivalent for IconListDetails
-  FileWarning,      // Lucide equivalent for IconReport (or FileBarChart)
-  Search,           // Lucide equivalent for IconSearch
-  Settings,         // Lucide equivalent for IconSettings
-  Users,            // Lucide equivalent for IconUsers
-  Bot,              // Lucide equivalent for IconFileAi (Bot is a common AI icon)
+  Camera,
+  BarChart,
+  LayoutDashboard,
+  FileText,
+  Layers,
+  UserCircle,
+  Bot,
+  CalendarCheck, // Lucide equivalent for appointments
+  MessageSquare, // Lucide equivalent for communication
+  LogOut, // Import LogOut icon
 } from "lucide-react"
 
-import { NavDocuments } from "../molecules/NavDocuments"
 import { NavMain } from "../molecules/NavMain"
 import { NavSecondary } from "../molecules/NavSecondary"
 import { NavUser } from "../molecules/NavUser"
@@ -42,34 +37,34 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
-      icon: LayoutDashboard, // Changed to Lucide icon
+      url: "/dashboard",
+      icon: LayoutDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: List, // Changed to Lucide icon
+      title: "Appointments",
+      url: "/appointments",
+      icon: CalendarCheck,
+    },
+    {
+      title: "Review",
+      url: "/review",
+      icon: FileText,
+    },
+    {
+      title: "Communication",
+      url: "/communication",
+      icon: MessageSquare,
     },
     {
       title: "Analytics",
-      url: "#",
-      icon: BarChart, // Changed to Lucide icon
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: Folder, // Changed to Lucide icon
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: Users, // Changed to Lucide icon
+      url: "/analytics",
+      icon: BarChart,
     },
   ],
   navClouds: [
     {
       title: "Capture",
-      icon: Camera, // Changed to Lucide icon
+      icon: Camera,
       isActive: true,
       url: "#",
       items: [
@@ -85,7 +80,7 @@ const data = {
     },
     {
       title: "Proposal",
-      icon: FileText, // Changed to Lucide icon
+      icon: FileText,
       url: "#",
       items: [
         {
@@ -100,7 +95,7 @@ const data = {
     },
     {
       title: "Prompts",
-      icon: Bot, // Changed to Lucide icon (Bot is a good fit for AI)
+      icon: Bot,
       url: "#",
       items: [
         {
@@ -109,46 +104,24 @@ const data = {
         },
         {
           title: "Archived",
-          url: "#",
         },
       ],
     },
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings, // Changed to Lucide icon
+      title: "Account",
+      url: "/account",
+      icon: UserCircle,
     },
     {
-      title: "Get Help",
-      url: "#",
-      icon: HelpCircle, // Changed to Lucide icon
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search, // Changed to Lucide icon
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: Database, // Changed to Lucide icon
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: FileWarning, // Changed to Lucide icon (FileWarning or FileBarChart for reports)
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: FilePenLine, // Changed to Lucide icon (FilePenLine or FileText for word docs)
+      title: "Log out",
+      url: "/",
+      icon: LogOut,
     },
   ],
 }
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -161,17 +134,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <Layers className="!size-5" /> {/* Changed to Lucide icon (Layers is a good alternative for InnerShadowTop) */}
-                <span className="text-base font-semibold">LakSewa Gov.</span>
+                <Layers className="!size-5" />
+                <span className="text-base font-semibold">ලක්seவா Gov.</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/* These components are already updated in previous responses to use Lucide icons internally */}
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
