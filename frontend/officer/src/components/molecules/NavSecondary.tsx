@@ -1,7 +1,9 @@
+// src/molecules/NavSecondary.tsx
 "use client"
 
 import * as React from "react"
-import { type LucideIcon } from "lucide-react" // Changed from @tabler/icons-react to lucide-react
+import { type LucideIcon } from "lucide-react"
+import { Link } from "react-router-dom" // Import Link
 
 import {
   SidebarGroup,
@@ -18,7 +20,7 @@ export function NavSecondary({
   items: {
     title: string
     url: string
-    icon: LucideIcon // Changed from Icon to LucideIcon
+    icon: LucideIcon
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
@@ -28,10 +30,11 @@ export function NavSecondary({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
-                <a href={item.url}>
+                {/* Use Link component */}
+                <Link to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
