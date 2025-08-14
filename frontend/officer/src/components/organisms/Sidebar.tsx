@@ -1,14 +1,14 @@
 "use client"
 
 import * as React from "react"
+// No longer need useEffect and useState here, as data is from context
+// import { useEffect, useState } from "react"
 
 import {
-  Camera,
   BarChart,
   LayoutDashboard,
   FileText,
   UserCircle,
-  Bot,
   CalendarCheck,
   MessageSquare,
   LogOut,
@@ -27,109 +27,90 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
+import { Separator } from "@/components/ui/separator"
+
 // IMPORT YOUR CUSTOM LOGO
 import Logo from '../../assets/Logo.png';
 
 // Import Link from react-router-dom
 import { Link } from "react-router-dom";
 
+// IMPORT useUser from your context
+import { useUser } from '@/components/context/UserContext';
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+
+// Define a default user for display before context data is loaded or if there's an error
+const defaultDisplayUser = {
+  name: "Loading...",
+  email: "",
+  avatar: "/avatars/placeholder.jpg",
+};
+
+// ... (your navMainItems and navSecondaryItems remain unchanged)
+const navMainItems = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Appointments",
-      url: "/appointments",
-      icon: CalendarCheck,
-    },
-    {
-      title: "Review",
-      url: "/review",
-      icon: FileText,
-    },
-    {
-      title: "Communication",
-      url: "/communication",
-      icon: MessageSquare,
-    },
-    {
-      title: "Analytics",
-      url: "/analytics",
-      icon: BarChart,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: Camera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileText,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: Bot,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Account",
-      url: "/account",
-      icon: UserCircle,
-    },
-    {
-      title: "Log out",
-      url: "/",
-      icon: LogOut,
-    },
-  ],
-}
+  {
+    title: "Appointments",
+    url: "/appointments",
+    icon: CalendarCheck,
+  },
+  {
+    title: "Review",
+    url: "/review",
+    icon: FileText,
+  },
+  {
+    title: "Communication",
+    url: "/communication",
+    icon: MessageSquare,
+  },
+  {
+    title: "Analytics",
+    url: "/analytics",
+    icon: BarChart,
+  },
+];
 
 
+const navSecondaryItems = [
+  {
+    title: "Account",
+    url: "/account",
+    icon: UserCircle,
+  },
+  {
+    title: "Log out",
+    url: "/", // Assuming / is the logout or home page
+    icon: LogOut,
+  },
+];
+
+
+// Remove userId from props as it will be consumed from context directly
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  // Get userData directly from the UserContext
+  const { userData } = useUser();
+
+  // Create the user object for NavUser based on fetched data or default
+  const currentUserData = React.useMemo(() => {
+    if (userData) {
+      return {
+        name: `${userData.firstName} ${userData.lastName}`,
+        email: userData.email,
+        avatar: "https://placehold.co/600x400?text=N/A",
+      };
+    }
+    return defaultDisplayUser; // Display "Loading..." or placeholder
+  }, [userData]); // Re-calculate when userData from context changes
+
+  // You can still log if needed for debugging, but the logic relies on context
+  console.log("AppSidebar re-rendered. Current user data state:", currentUserData);
+
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -139,8 +120,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              {/* Changed <a> to <Link> */}
-              <Link to="/dashboard"> {/* Use 'to' prop instead of 'href' */}
+              <Link to="/dashboard">
                 <img
                   src={Logo}
                   alt="Laksewa Gov. Logo"
@@ -153,11 +133,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={navMainItems} />
+        <NavSecondary items={navSecondaryItems} className="mt-auto" />
       </SidebarContent>
+      <Separator className="my-4" />
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={currentUserData} />
       </SidebarFooter>
     </Sidebar>
   )
