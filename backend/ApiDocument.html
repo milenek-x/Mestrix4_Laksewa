@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mestrix4_LakSewa .NET Core Web API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            color: #283747;
+            margin-bottom: 30px;
+        }
+        .disclaimer {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .toc {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .toc h2 {
+            margin-top: 0;
+            color: #34495e;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .toc li {
+            margin-right: 15px;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        details {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+        }
+        summary {
+            font-weight: bold;
+            padding: 15px;
+            cursor: pointer;
+            background-color: #f2f2f2;
+            border-bottom: 1px solid #eee;
+            border-radius: 5px 5px 0 0;
+        }
+        details[open] summary {
+            border-bottom: 1px solid #ccc;
+        }
+        .tag-section-content {
+            padding: 15px;
+        }
+        .model-schema {
+            background-color: #e8f0fe;
+            border: 1px solid #cce0ff;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .model-schema pre {
+            background-color: #f4f7f8;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .endpoint {
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background-color: #fdfdfd;
+        }
+        .http-method {
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .get { background-color: #4CAF50; } /* Green */
+        .post { background-color: #2196F3; } /* Blue */
+        .put { background-color: #FF9800; } /* Orange */
+        .delete { background-color: #f44336; } /* Red */
+        .head { background-color: #607D8B; } /* Grey */
+        .patch { background-color: #9C27B0; } /* Purple */
+        .options { background-color: #00BCD4; } /* Cyan */
+        .trace { background-color: #795548; } /* Brown */
+        .required {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .optional {
+            color: #5cb85c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mestrix4_LakSewa .NET Core Web API Documentation</h1>
+    <div class="disclaimer">
+        <strong>Disclaimer:</strong> This documentation is automatically generated from the OpenAPI (Swagger) specification and should be used as a reference.
+    </div>
+    <p>This page provides a comprehensive, static HTML documentation for the Mestrix4_LakSewa .NET Core Web API, generated directly from its OpenAPI specification.</p>
+
+    <div class="toc">
+        <h2>Table of Contents</h2>
+        <ul id="toc-list">
+            </ul>
+    </div>
+
+    <div id="api-documentation">
+        </div>
+
+    <script>
+        // *** IMPORTANT: Path to your local Swagger JSON file ***
+        const swaggerJsonFilePath = 'swagger_spec.json'; // Make sure this file is in the same directory as your HTML
+        const apiBaseUrl = "http://localhost:5102/"; // This base URL might also need to be dynamic or configured
+
+        function generateExample(schemaRef, schemas) {
+            if (!schemaRef) return "{}";
+
+            const schemaName = schemaRef.replace('#/components/schemas/', '');
+            const schema = schemas[schemaName];
+
+            if (!schema) {
+                console.warn(`Schema not found for ${schemaName}`);
+                return `{ "error": "Schema '${schemaName}' not found" }`;
+            }
+
+            const example = {};
+            if (schema.type === "array" && schema.items && schema.items.$ref) {
+                const itemSchemaName = schema.items.$ref.replace('#/components/schemas/', '');
+                const itemSchema = schemas[itemSchemaName];
+                if (itemSchema) {
+                    return JSON.stringify([JSON.parse(generateExample(schema.items.$ref, schemas))], null, 2);
+                } else {
+                    return `[{"error": "Array item schema '${itemSchemaName}' not found"}]`;
+                }
+            }
+
+
+            if (schema.properties) {
+                for (const propName in schema.properties) {
+                    const prop = schema.properties[propName];
+                    if (prop.$ref) {
+                        const nestedExample = generateExample(prop.$ref, schemas);
+                        try {
+                            example[propName] = JSON.parse(nestedExample);
+                        } catch (e) {
+                            example[propName] = nestedExample;
+                        }
+                    } else if (prop.type === "string") {
+                        if (prop.format === "date-time") {
+                            example[propName] = "2025-08-14T07:01:20.000Z";
+                        } else if (prop.format === "uuid" || propName.toLowerCase().includes("id")) {
+                            example[propName] = "string";
+                        } else {
+                            example[propName] = "string";
+                        }
+                    } else if (prop.type === "integer") {
+                        example[propName] = 0;
+                    } else if (prop.type === "boolean") {
+                        example[propName] = true;
+                    } else if (prop.type === "array") {
+                        if (prop.items && prop.items.$ref) {
+                            const itemSchemaName = prop.items.$ref.replace('#/components/schemas/', '');
+                            const itemSchema = schemas[itemSchemaName];
+                            if (itemSchema) {
+                                example[propName] = [JSON.parse(generateExample(prop.items.$ref, schemas))];
+                            } else {
+                                example[propName] = [`{"error": "Array item schema '${itemSchemaName}' not found"}`];
+                            }
+                        } else if (prop.items) {
+                            example[propName] = [`${prop.items.type}_example`];
+                        } else {
+                            example[propName] = [];
+                        }
+                    } else if (prop.type === "object") {
+                        if (prop.additionalProperties) {
+                            example[propName] = { "additionalProp1": "value" };
+                        } else {
+                            example[propName] = {};
+                        }
+                    } else {
+                        example[propName] = null;
+                    }
+                }
+            } else if (schema.type === "array" && schema.items && schema.items.$ref) {
+                const itemSchemaName = schema.items.$ref.replace('#/components/schemas/', '');
+                const itemSchema = schemas[itemSchemaName];
+                if (itemSchema) {
+                    return JSON.stringify([JSON.parse(generateExample(schema.items.$ref, schemas))], null, 2);
+                } else {
+                    return `[{"error": "Array item schema '${itemSchemaName}' not found"}]`;
+                }
+            } else if (schema.type === "object" && Object.keys(schema.properties || {}).length === 0 && schema.additionalProperties) {
+                example["additionalProp1"] = "value";
+            } else if (schema.type === "string" && schema.format === "uuid") {
+                return JSON.stringify("string", null, 2);
+            } else if (schema.type === "string" && schema.format === "date-time") {
+                return JSON.stringify("2025-08-14T07:01:20.000Z", null, 2);
+            }
+
+
+            return JSON.stringify(example, null, 2);
+        }
+
+        // Function to render the documentation
+        function renderDocumentation(swaggerSpec) {
+            const apiDocDiv = document.getElementById('api-documentation');
+            const tocList = document.getElementById('toc-list');
+            const tags = {};
+
+            // Clear previous content
+            apiDocDiv.innerHTML = '';
+            tocList.innerHTML = '';
+
+            // Group paths by tags
+            for (const path in swaggerSpec.paths) {
+                for (const method in swaggerSpec.paths[path]) {
+                    const operation = swaggerSpec.paths[path][method];
+                    if (operation.tags && operation.tags.length > 0) {
+                        const tagName = operation.tags[0]; // Assuming one tag per operation for grouping
+                        if (!tags[tagName]) {
+                            tags[tagName] = [];
+                        }
+                        tags[tagName].push({ path, method, operation });
+                    }
+                }
+            }
+
+            for (const tagName in tags) {
+                const tagId = tagName.toLowerCase().replace(/\s+/g, '-');
+                const tagSection = document.createElement('details');
+                tagSection.id = tagId;
+                tagSection.innerHTML = `
+                    <summary>${tagName} API Endpoints</summary>
+                    <div class="tag-section-content">
+                        <h3>Model Schema(s) for this section</h3>
+                        <div class="model-schemas"></div>
+                        <h3>Endpoints</h3>
+                        <div class="endpoints-list"></div>
+                    </div>
+                `;
+                apiDocDiv.appendChild(tagSection);
+
+                // Add to Table of Contents
+                const tocItem = document.createElement('li');
+                tocItem.innerHTML = `<a href="#${tagId}">${tagName}</a>`;
+                tocList.appendChild(tocItem);
+
+                const modelSchemasDiv = tagSection.querySelector('.model-schemas');
+                const endpointsListDiv = tagSection.querySelector('.endpoints-list');
+                const schemasUsedInTag = new Set();
+
+                // Collect all schemas used in this tag's operations
+                tags[tagName].forEach(endpoint => {
+                    const operation = endpoint.operation;
+
+                    // Request Body Schema
+                    if (operation.requestBody && operation.requestBody.content) {
+                        for (const mediaType in operation.requestBody.content) {
+                            const schema = operation.requestBody.content[mediaType].schema;
+                            if (schema && schema.$ref) {
+                                schemasUsedInTag.add(schema.$ref.replace('#/components/schemas/', ''));
+                            }
+                        }
+                    }
+
+                    // Response Body Schemas
+                    if (operation.responses) {
+                        for (const statusCode in operation.responses) {
+                            const response = operation.responses[statusCode];
+                            if (response.content) {
+                                for (const mediaType in response.content) {
+                                    const schema = response.content[mediaType].schema;
+                                    if (schema && schema.$ref) {
+                                        schemasUsedInTag.add(schema.$ref.replace('#/components/schemas/', ''));
+                                    } else if (schema && schema.type === "array" && schema.items && schema.items.$ref) {
+                                        schemasUsedInTag.add(schema.items.$ref.replace('#/components/schemas/', ''));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Display collected schemas for this tag
+                schemasUsedInTag.forEach(schemaName => {
+                    const schema = swaggerSpec.components.schemas[schemaName];
+                    if (schema) {
+                        let propertiesHtml = '';
+                        if (schema.properties) {
+                            propertiesHtml += '<ul>';
+                            for (const propName in schema.properties) {
+                                const prop = schema.properties[propName];
+                                const type = prop.type || (prop.$ref ? prop.$ref.replace('#/components/schemas/', '') : 'object');
+                                const format = prop.format ? ` (${prop.format})` : '';
+                                const required = schema.required && schema.required.includes(propName) ? '<span class="required">(required)</span>' : '<span class="optional">(optional)</span>';
+                                const nullable = prop.nullable ? ' (nullable)' : '';
+                                propertiesHtml += `<li><strong>${propName}</strong>: <code>${type}${format}</code> ${required}${nullable} - ${prop.description || ''}</li>`;
+                            }
+                            propertiesHtml += '</ul>';
+                        }
+                        modelSchemasDiv.innerHTML += `
+                            <div class="model-schema">
+                                <h4>Schema: <code>${schemaName}</code></h4>
+                                ${propertiesHtml}
+                                <h5>Example:</h5>
+                                <pre><code>${generateExample(`#/components/schemas/${schemaName}`, swaggerSpec.components.schemas)}</code></pre>
+                            </div>
+                        `;
+                    }
+                });
+
+                // Display endpoints for this tag
+                tags[tagName].forEach(endpoint => {
+                    const methodClass = endpoint.method.toLowerCase();
+                    let parametersHtml = '';
+                    if (endpoint.operation.parameters && endpoint.operation.parameters.length > 0) {
+                        parametersHtml = '<h4>Parameters:</h4><ul>';
+                        endpoint.operation.parameters.forEach(param => {
+                            const required = param.required ? '<span class="required">(required)</span>' : '<span class="optional">(optional)</span>';
+                            let exampleValue = '';
+                            if (param.in === 'path' && param.schema && param.schema.type === 'string') {
+                                if (param.schema.format === 'uuid') {
+                                    exampleValue = ' (e.g., string)';
+                                } else {
+                                    exampleValue = ' (e.g., string ID)';
+                                }
+                            }
+                            parametersHtml += `<li class="param-item"><strong>${param.name}</strong>: <code>${param.schema.type}</code> (in: ${param.in}) ${required}${exampleValue} - ${param.description || ''}</li>`;
+                        });
+                        parametersHtml += '</ul>';
+                    }
+
+                    let requestBodyHtml = '';
+                    if (endpoint.operation.requestBody) {
+                        const requestBodyContent = endpoint.operation.requestBody.content;
+                        if (requestBodyContent && requestBodyContent['application/json']) {
+                            const schema = requestBodyContent['application/json'].schema;
+                            let schemaRef = null;
+                            let schemaName = '';
+
+                            if (schema.$ref) {
+                                schemaRef = schema.$ref;
+                                schemaName = schemaRef.replace('#/components/schemas/', '');
+                            } else if (schema.type === "array" && schema.items && schema.items.$ref) {
+                                schemaRef = schema.items.$ref;
+                                schemaName = `Array of ${schemaRef.replace('#/components/schemas/', '')}`;
+                            } else if (schema.type === "object" || schema.type === "array") {
+                                schemaName = schema.type;
+                            }
+
+                            if (schemaRef || schemaName) {
+                                requestBodyHtml = `
+                                    <h4>Request Body:</h4>
+                                    <p>Schema: <code>${schemaName}</code></p>
+                                    <h5>Example Request Body:</h5>
+                                    <pre><code>${generateExample(schemaRef, swaggerSpec.components.schemas)}</code></pre>
+                                `;
+                            }
+                        }
+                    }
+
+                    let responsesHtml = '<h4>Responses:</h4>';
+                    for (const statusCode in endpoint.operation.responses) {
+                        const response = endpoint.operation.responses[statusCode];
+                        let responseBodyHtml = '';
+                        if (response.content && response.content['application/json']) {
+                            const schema = response.content['application/json'].schema;
+                            let schemaRef = null;
+                            let schemaName = '';
+
+                            if (schema.$ref) {
+                                schemaRef = schema.$ref;
+                                schemaName = schemaRef.replace('#/components/schemas/', '');
+                            } else if (schema.type === "array" && schema.items && schema.items.$ref) {
+                                schemaRef = schema.items.$ref;
+                                schemaName = `Array of ${schemaRef.replace('#/components/schemas/', '')}`;
+                            } else if (schema.type === "object" || schema.type === "array") {
+                                schemaName = schema.type;
+                            }
+
+                            if (schemaRef || schemaName) {
+                                responseBodyHtml = `
+                                    <p>Schema: <code>${schemaName}</code></p>
+                                    <h5>Example Response Body:</h5>
+                                    <pre><code>${generateExample(schemaRef, swaggerSpec.components.schemas)}</code></pre>
+                                `;
+                            }
+                        }
+                        responsesHtml += `
+                            <div class="response-item">
+                                <h5>Status Code: <code>${statusCode}</code></h5>
+                                <p>${response.description || 'No description provided.'}</p>
+                                ${responseBodyHtml}
+                            </div>
+                        `;
+                    }
+
+                    endpointsListDiv.innerHTML += `
+                        <div class="endpoint">
+                            <h3>
+                                <span class="http-method ${methodClass}">${endpoint.method.toUpperCase()}</span>
+                                <span class="path">${apiBaseUrl}${endpoint.path.replace(/^\//, '')}</span>
+                            </h3>
+                            <p><strong>Summary:</strong> ${endpoint.operation.summary || endpoint.operation.description || 'No summary or description provided.'}</p>
+                            ${parametersHtml}
+                            ${requestBodyHtml}
+                            ${responsesHtml}
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch(swaggerJsonFilePath) // Changed from swaggerJsonUrl to swaggerJsonFilePath
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // Still parse as JSON, as the .txt file contains JSON
+                })
+                .then(swaggerSpec => {
+                    renderDocumentation(swaggerSpec);
+                })
+                .catch(error => {
+                    console.error('Error fetching Swagger JSON:', error);
+                    document.getElementById('api-documentation').innerHTML = `<p style="color: red;">Error loading API documentation: Could not fetch Swagger JSON from ${swaggerJsonFilePath}. Please ensure the file exists in the same directory as this HTML file.</p>`;
+                });
+        });
+    </script>
+</body>
+</html>
