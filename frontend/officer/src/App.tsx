@@ -17,6 +17,7 @@ import Analytics from './components/pages/Analytics.tsx';
 import Settings from './components/pages/Account.tsx';
 
 import './i18n'; 
+import { Toaster } from 'sonner';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
+    <Toaster position='top-center'/>
     </>
   );
 }

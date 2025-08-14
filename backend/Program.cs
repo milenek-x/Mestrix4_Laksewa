@@ -9,6 +9,21 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Define a CORS policy name
+var MyAllowAnyOriginPolicy = "_myAllowAnyOriginPolicy";
+
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowAnyOriginPolicy,
+                      builder =>
+                      {
+                          builder.AllowAnyOrigin() // Allow requests from any origin
+                                 .AllowAnyHeader()   // Allow any headers
+                                 .AllowAnyMethod();  // Allow any HTTP methods (GET, POST, PUT, DELETE, etc.)
+                      });
+});
+
 // Add services to the container.
 
 // Configure MongoDB settings from appsettings.json
@@ -79,10 +94,10 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "Mestrix4_Kathiraya_Backend", 
-        Version = "v1" 
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Mestrix4_Kathiraya_Backend",
+        Version = "v1"
     });
     c.EnableAnnotations();
 });
@@ -90,18 +105,32 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseSwagger();
-
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment()) // Typically, you'd enable Swagger only in development
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mestrix4_LakSewa_Backend v1");
-    c.RoutePrefix = string.Empty;
-    c.DisplayRequestDuration();
-    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mestrix4_LakSewa_Backend v1");
+        c.RoutePrefix = string.Empty;
+        c.DisplayRequestDuration();
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    });
+}
+// else
+// {
+//     // In production, consider adding HSTS and HTTPS Redirection middleware
+//     app.UseHsts();
+//     app.UseHttpsRedirection();
+// }
+
 
 app.UseHttpsRedirection();
+
+// ** IMPORTANT: Enable CORS here, and place it AFTER UseRouting() and BEFORE UseAuthorization()/UseEndpoints() **
+app.UseCors(MyAllowAnyOriginPolicy);
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
