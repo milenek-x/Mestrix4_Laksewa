@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User2, Lock, Loader2 } from "lucide-react";
+import { Link } from "react-router-dom"; // 👈 add this
 
 // Your shadcn-style components that already exist in your repo
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,7 +46,7 @@ export default function Login() {
     <main className="min-h-screen grid place-items-center bg-[#F5F7F9] p-4">
       <Card className="w-full max-w-md rounded-2xl shadow-lg">
         <CardHeader className="items-center space-y-4">
-          {/* Logo (replace src with your logo asset) */}
+          {/* Logo */}
           <img src={logo} alt="Laksewa" className="h-30 w-30 object-contain" />
           <div className="text-center">
             <CardTitle className="text-2xl mt-1">LOGIN</CardTitle>
@@ -101,9 +102,11 @@ export default function Login() {
                 <input type="checkbox" className="size-4" {...register("remember")} />
                 Remember me
               </label>
-              <a href="/forgot-password" className="text-[#231F44] hover:underline">
+
+              {/* 👇 use Link for client-side navigation */}
+              <Link to="/forgot-password" className="text-[#231F44] hover:underline">
                 Forget Password?
-              </a>
+              </Link>
             </div>
 
             <Button
