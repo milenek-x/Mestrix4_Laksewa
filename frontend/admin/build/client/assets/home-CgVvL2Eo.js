@@ -1,0 +1,1 @@
+import{w as t,p as e}from"./chunk-ZYFC6VSF-CBBTUsSH.js";function r({}){return[{title:"New React Router App"},{name:"description",content:"Welcome to React Router!"}]}const i=t(function(){return e.jsx("h1",{className:"text-3xl font-bold underline",children:"This is the Admin Portal!"})});export{i as default,r as meta};
