@@ -29,7 +29,7 @@ export const NavItem: React.FC<NavItemProps> = ({
       className={cn(
         "w-full justify-start gap-3 py-2 px-4 rounded-lg",
         "hover:bg-primary/10 transition-colors duration-200",
-        isActive ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground"
+        isActive ? "bg-app-login text-primary-foreground hover:bg-primary/90" : "text-muted-foreground"
       )}
       onClick={onClick}
     >

@@ -12,9 +12,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom"; // Assuming you've set up react-router-dom
+import { useNavigate } from "react-router-dom";
 import { Loader2Icon } from "lucide-react";
 import Logo from '../../assets/Logo.png';
+
+// Import the useUser hook from your context
+import { useUser } from '@/components/context/UserContext'; // Adjust the path if necessary
 
 export function LoginForm({
   className,
@@ -24,6 +27,7 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { setUserId } = useUser(); // Get the setUserId function from the context
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -42,8 +46,6 @@ export function LoginForm({
     }
 
     try {
-      console.log("Sending request body:", JSON.stringify({ UsernameOrEmail: identifier, Password: password }));
-      console.log("To URL:", "http://localhost:5102/api/User/authenticate");
       const response = await fetch("http://localhost:5102/api/User/authenticate", {
         method: "POST",
         headers: {
@@ -59,7 +61,14 @@ export function LoginForm({
         const result = await response.json();
         toast.success("Login successful! Redirecting...");
         console.log("Login successful:", result);
-        navigate("/dashboard");
+
+        const userId = result.userId; // Assuming your API response has 'userId'
+        
+        // Set the userId in your global context
+        setUserId(userId); 
+
+        // Now navigate without passing userId in state, as it's in context
+        navigate("/dashboard"); 
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || "Invalid username/email or password.");
@@ -77,27 +86,26 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          {/* Add the logo image here */}
           <img
             src={Logo}
             alt="LakSewa Logo"
-            className="mx-auto h-24 w-24 object-contain mb-4" // Tailwind classes for centering, size, and bottom margin
+            className="mx-auto h-24 w-24 object-contain mb-4"
           />
           <CardTitle className="text-center text-app-login">Officer Login</CardTitle>
         </CardHeader>
         <CardContent className="">
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col items-start gap-3"> {/* Use flex column to stack label and input, center horizontally */}
-                <Label htmlFor="identifier" className="text-center">Username/Email</Label> {/* Ensure label text is centered */}
+              <div className="flex flex-col items-start gap-3">
+                <Label htmlFor="identifier" className="text-center">Username or Email</Label>
                 <Input
                   id="identifier"
                   type="text"
-                  placeholder="m@example.com or username"
+                  placeholder="Enter your username or email"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   disabled={isLoading}
-                  className="w-full max-w-xs" // Input takes full width of its constrained container, centered by parent flex
+                  className="w-full max-w-xs"
                 />
               </div>
               <div className="grid gap-3">
@@ -114,6 +122,7 @@ export function LoginForm({
                   id="password"
                   type="password"
                   value={password}
+                  placeholder="Enter your password"
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
                 />

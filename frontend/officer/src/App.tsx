@@ -18,6 +18,7 @@ import Settings from './components/pages/Account.tsx';
 
 import './i18n'; 
 import { Toaster } from 'sonner';
+import { UserProvider } from './components/context/UserContext.tsx';
 
 
 function App() {
@@ -25,15 +26,17 @@ function App() {
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <BrowserRouter>
-        <Routes>
-          <Route index element={<LoginPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/appointments" element={<Appointments />} />
-          <Route path="/review" element={<Review />} />
-          <Route path="/communication" element={<Communication />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/account" element={<Settings />} />
-        </Routes>
+        <UserProvider>
+          <Routes>
+            <Route index element={<LoginPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/appointments" element={<Appointments />} />
+            <Route path="/review" element={<Review />} />
+            <Route path="/communication" element={<Communication />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/account" element={<Settings />} />
+          </Routes>
+        </UserProvider>
       </BrowserRouter>
     </ThemeProvider>
     <Toaster position='top-center'/>

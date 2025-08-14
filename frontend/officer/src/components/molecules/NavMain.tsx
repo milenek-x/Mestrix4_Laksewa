@@ -29,7 +29,7 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => {
             // Determine if the current item is active
-            const isActive = location.pathname === item.url;
+            const isSelected = location.pathname === item.url;
 
             return (
               <SidebarMenuItem key={item.title}>
@@ -37,7 +37,7 @@ export function NavMain({
                   asChild
                   tooltip={item.title}
                   // Apply dynamic classes for active state
-                  className={isActive ? "bg-black text-white" : ""}
+                  className={isSelected ? "bg-app-login text-app-login-foreground" : "transition-none"}
                 >
                   <Link to={item.url}>
                     {item.icon && <item.icon />}
