@@ -27,11 +27,6 @@ E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\bin\Debug\net8.0\Swashbuckle
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\bin\Debug\net8.0\ZstdSharp.dll
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets.build.json
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets.development.json
-E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets\msbuild.backend.Microsoft.AspNetCore.StaticWebAssets.props
-E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets\msbuild.build.backend.props
-E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.backend.props
-E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.backend.props
-E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets.pack.json
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\scopedcss\bundle\backend.styles.css
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\backend.csproj.Up2Date
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\backend.dll
@@ -39,3 +34,12 @@ E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\refint\back
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\backend.pdb
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\backend.genruntimeconfig.cache
 E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\ref\backend.dll
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\rpswa.dswa.cache.json
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\bin\Debug\net8.0\swagger_spec.json
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\bin\Debug\net8.0\backend.staticwebassets.endpoints.json
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\bin\Debug\net8.0\BCrypt.Net-Next.dll
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\rjimswa.dswa.cache.json
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets.build.json.cache
+E:\Rootcode_Hackathon_2025\Mestrix4_Laksewa\backend\obj\Debug\net8.0\staticwebassets.build.endpoints.json
