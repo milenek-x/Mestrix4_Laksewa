@@ -1,16 +1,19 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-public class AccountSettings
+namespace backend.Layers.Models
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public required string Id { get; set; }
-    
-    [BsonRepresentation(BsonType.ObjectId)]
-    public required string UserId { get; set; }
-    
-    public string? LanguagePreference { get; set; }
-    public string? Theme { get; set; }
-    public string? NotificationPreferences { get; set; }
+    public class AccountSettings
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? UserId { get; set; }
+        
+        public string? LanguagePreference { get; set; }
+        public string? Theme { get; set; }
+        public string? NotificationPreferences { get; set; }
+    }
 }
