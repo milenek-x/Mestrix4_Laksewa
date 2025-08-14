@@ -2,18 +2,21 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 
-public class ServiceRequest
+namespace backend.Layers.Models
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public required string Id { get; set; }
-    
-    [BsonRepresentation(BsonType.ObjectId)]
-    public required string ServiceId { get; set; }
-    [BsonRepresentation(BsonType.ObjectId)]
-    public required string RequestedById { get; set; }
-    
-    public required string Status { get; set; }
-    public required DateTime SubmittedAt { get; set; }
-    public DateTime? CompletedAt { get; set; }
+    public class ServiceRequest
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? ServiceId { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? RequestedById { get; set; }
+        
+        public string? Status { get; set; }
+        public DateTime SubmittedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+    }
 }
