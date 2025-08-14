@@ -71,6 +71,14 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+
+  /* App Specific Light Color theme */
+  --app-background: oklch(96.15% 0.003 100.8);
+  --app-login: oklch(46.29% 0.165 264.08); /* Corresponds to #007EED */
+  --app-login-foreground: oklch(100% 0 0); /* Corresponds to #FFFFFF */
+  --app-confirm-button: oklch(64.1% 0.05 180.1); /* Corresponds to #00ADA5 */
+  --app-sidebar: oklch(24.77% 0.055 265.52); /* Corresponds to #093472 */
+  --app-form-background: oklch(100% 0 0); /* Corresponds to #FFFFFF */
 }
 
 .dark {
@@ -106,6 +114,15 @@
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  
+
+  /* App Specific Dark Color theme */
+  --app-background: oklch(15% 0.005 100.8); /* Darkened background */
+  --app-login: oklch(46.29% 0.165 264.08); /* Login button often stays consistent for branding */
+  --app-login-foreground: oklch(98% 0 0); /* Light text on dark background */
+  --app-confirm-button: oklch(60% 0.05 180.1); /* Slightly darker confirm button */
+  --app-sidebar: oklch(10% 0.055 265.52); /* Much darker sidebar */
+  --app-form-background: oklch(18% 0.005 100.8); /* Darkened form background, slightly lighter than overall background */
 }
 
 @theme inline {
@@ -148,6 +165,14 @@
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 
+  --color-app-background: var(--app-background);
+  --color-app-login: var(--app-login);
+  --color-app-login-foreground: var(--app-login-foreground);
+  --color-app-confirm-button: var(--app-confirm-button);
+  --color-app-sidebar: var(--app-sidebar);
+  --color-app-form-background: var(--app-form-background);
+
+
   @keyframes accordion-down {
     from {
       height: 0;
@@ -172,7 +197,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-app-background text-foreground;
   }
 }
 

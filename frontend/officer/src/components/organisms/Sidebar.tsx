@@ -7,12 +7,11 @@ import {
   BarChart,
   LayoutDashboard,
   FileText,
-  Layers,
   UserCircle,
   Bot,
-  CalendarCheck, // Lucide equivalent for appointments
-  MessageSquare, // Lucide equivalent for communication
-  LogOut, // Import LogOut icon
+  CalendarCheck,
+  MessageSquare,
+  LogOut,
 } from "lucide-react"
 
 import { NavMain } from "../molecules/NavMain"
@@ -27,6 +26,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+
+// IMPORT YOUR CUSTOM LOGO
+import Logo from '../../assets/Logo.png';
+
+// Import Link from react-router-dom
+import { Link } from "react-router-dom";
+
 
 const data = {
   user: {
@@ -133,10 +139,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
-                <Layers className="!size-5" />
-                <span className="text-base font-semibold">ලක්seவா Gov.</span>
-              </a>
+              {/* Changed <a> to <Link> */}
+              <Link to="/dashboard"> {/* Use 'to' prop instead of 'href' */}
+                <img
+                  src={Logo}
+                  alt="Laksewa Gov. Logo"
+                  className="!size-7 object-contain mr-2"
+                />
+                <span className="text-base font-semibold">LakSewa Officer</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
