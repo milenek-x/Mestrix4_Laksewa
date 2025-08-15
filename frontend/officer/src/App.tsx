@@ -15,6 +15,7 @@ import Review from './components/pages/Review.tsx';
 import Communication from './components/pages/Communication.tsx';
 import Analytics from './components/pages/Analytics.tsx';
 import Settings from './components/pages/Account.tsx';
+import ForgotPassword from './components/pages/ForgotPassword.tsx';
 
 import './i18n'; 
 import { Toaster } from 'sonner';
@@ -30,6 +31,7 @@ function App() {
           <Routes>
             <Route index element={<LoginPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/review" element={<Review />} />
             <Route path="/communication" element={<Communication />} />
