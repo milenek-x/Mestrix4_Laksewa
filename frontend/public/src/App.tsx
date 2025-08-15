@@ -12,6 +12,9 @@ import MotorTrafficPage from './components/pages/MotorTrafficPage.tsx';
 import ImmigrationEmigrationPage from './components/pages/ImmigrationEmigrationPage.tsx';
 import RegistrarGeneralPage from './components/pages/RegistrarGeneralPage.tsx';
 
+// Import ProfilePage - ADD THIS LINE
+import ProfilePage from './components/pages/ProfilePage';
+
 import {
   BrowserRouter,
   Route,
@@ -97,6 +100,11 @@ const DashboardWrapper = () => {
   return <DashboardPage onLogout={handleLogout} />;
 };
 
+// ADD THIS NEW WRAPPER FOR PROFILE PAGE
+const ProfileWrapper = () => {
+  return <ProfilePage />;
+};
+
 function App() {
   return (
     <>
@@ -108,6 +116,9 @@ function App() {
               <Route path="/login" element={<LoginWrapper />} />
               <Route path="/register" element={<RegisterWrapper />} />
               <Route path="/dashboard" element={<DashboardWrapper />} />
+
+              {/* ADD THIS PROFILE ROUTE */}
+              <Route path="/profile" element={<ProfileWrapper />} />
 
               {/* New routes for department pages */}
               <Route path="/election-commission" element={<ElectionCommissionPage />} />
