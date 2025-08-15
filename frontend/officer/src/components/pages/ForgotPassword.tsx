@@ -1,7 +1,5 @@
-import { LoginForm } from "../molecules/LoginForm"
+import { ForgotPasswordForm } from "../molecules/ForgetPasswordForm"
 import { ModeToggle } from "../ui/mode-toggle"
-
-import { useNavigate } from 'react-router-dom';
 
 export default function Page() {
 
@@ -11,9 +9,8 @@ export default function Page() {
       <div className="absolute top-4 right-4 z-10">
         <ModeToggle />
       </div>
-
       <div className="w-full max-w-sm">
-        <LoginForm />
+        <ForgotPasswordForm />
       </div>
     </div>
   )
