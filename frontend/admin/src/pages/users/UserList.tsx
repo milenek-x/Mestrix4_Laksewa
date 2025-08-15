@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Search, Plus, Pencil, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import AddUserDialog, { AddUserForm } from "./AddUserDialog";
 
 type User = {
   id: string;
@@ -26,6 +27,8 @@ const SEED: User[] = Array.from({ length: 10 }).map((_, i) => ({
 
 export default function UserList() {
   const [q, setQ] = useState("");
+  const [openAdd, setOpenAdd] = useState(false);
+
   const users = useMemo(() => {
     if (!q.trim()) return SEED;
     const s = q.toLowerCase();
@@ -40,18 +43,13 @@ export default function UserList() {
     );
   }, [q]);
 
-  const onAdd = () => {
-    // later: navigate("/app/users/new")
-    console.log("Add user");
+  const onAdd = () => setOpenAdd(true);
+  const onCreated = (payload: AddUserForm) => {
+    // later: POST to API and refetch
+    console.log("Created (demo):", payload);
   };
-  const onEdit = (u: User) => {
-    // later: navigate(`/app/users/${u.id}/edit`)
-    console.log("Edit", u.id);
-  };
-  const onDelete = (u: User) => {
-    // later: open confirm dialog -> call API
-    console.log("Delete", u.id);
-  };
+  const onEdit = (u: User) => console.log("Edit", u.id);
+  const onDelete = (u: User) => console.log("Delete", u.id);
 
   return (
     <div className="space-y-4">
@@ -144,6 +142,13 @@ export default function UserList() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add User modal */}
+      <AddUserDialog
+        open={openAdd}
+        onOpenChange={setOpenAdd}
+        onCreated={onCreated}
+      />
     </div>
   );
 }
