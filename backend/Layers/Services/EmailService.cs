@@ -18,16 +18,34 @@ namespace backend.Layers.Services
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
             var smtpSettings = _configuration.GetSection("SmtpSettings");
-            var smtpClient = new SmtpClient(smtpSettings["Host"])
+            var host = smtpSettings["Host"];
+            var portString = smtpSettings["Port"];
+            var username = smtpSettings["Username"];
+            var password = smtpSettings["Password"];
+            var fromEmail = smtpSettings["FromEmail"];
+
+            if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(portString) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(fromEmail))
             {
-                Port = int.Parse(smtpSettings["Port"]),
-                Credentials = new NetworkCredential(smtpSettings["Username"], smtpSettings["Password"]),
+                // Throw an exception if any required setting is missing.
+                throw new InvalidOperationException("SMTP settings are missing or invalid in appsettings.json.");
+            }
+            
+            if (!int.TryParse(portString, out var port))
+            {
+                 // Throw an exception if the port is not a valid number.
+                 throw new InvalidOperationException("SMTP port is not a valid number in appsettings.json.");
+            }
+
+            var smtpClient = new SmtpClient(host)
+            {
+                Port = port,
+                Credentials = new NetworkCredential(username, password),
                 EnableSsl = true,
             };
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(smtpSettings["FromEmail"]),
+                From = new MailAddress(fromEmail),
                 Subject = subject,
                 Body = body,
                 IsBodyHtml = true,
