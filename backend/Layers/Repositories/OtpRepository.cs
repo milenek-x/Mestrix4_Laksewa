@@ -19,5 +19,18 @@ namespace backend.Layers.Repositories
         {
             await _otpCollection.InsertOneAsync(otp);
         }
+
+        public async Task<Otp?> GetOtpAsync(string userId)
+        {
+            return await _otpCollection.Find(o => o.UserId == userId).FirstOrDefaultAsync();
+        }
+
+        public async Task DeleteOtpAsync(string otpId)
+        {
+            await _otpCollection.DeleteOneAsync(o => o.Id == otpId);
+        }
+
+        public async Task DeleteExistingOtpsForUserAsync(string userId) =>
+            await _otpCollection.DeleteManyAsync(otp => otp.UserId == userId);
     }
 }
