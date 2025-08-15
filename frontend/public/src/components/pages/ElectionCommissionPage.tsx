@@ -1,0 +1,82 @@
+// src/pages/ElectionCommissionPage.tsx
+import React, { useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
+import { Users } from 'lucide-react';
+
+const ElectionCommissionPage: React.FC = () => {
+  const { id } = useParams<{ id?: string }>(); // 'id' might be useful if you had dynamic routing beyond just fixed department IDs
+  const location = useLocation();
+
+  const departmentData = {
+    department: "Election Commission of Sri Lanka",
+    services: [
+      "Voter Registration and Amendments",
+      "Inquiring Election Results",
+      "Obtaining Electoral Register Copies",
+      "Application for Postal Voting"
+    ],
+    icon: Users,
+    color: 'from-blue-500 to-blue-600',
+    description: 'Register to vote, inquire results, and get electoral documents.',
+    id: 'election-commission',
+  };
+
+  // Function to create a URL-friendly hash from a service name
+  const createServiceHash = (serviceName: string) => {
+    return serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  };
+
+  // Scroll to section based on hash in URL
+  useEffect(() => {
+    if (location.hash) {
+      const elementId = location.hash.substring(1); // Remove the '#'
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [location]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+      <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-blue-200 p-8">
+        <div className="flex flex-col items-center justify-center mb-6">
+          <div className={`w-20 h-20 bg-gradient-to-r ${departmentData.color} rounded-full flex items-center justify-center mb-4 shadow-lg`}>
+            <departmentData.icon className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-3xl font-bold text-blue-900 mb-2">
+            {departmentData.department}
+          </h2>
+          <p className="text-blue-700 text-lg text-center">
+            {departmentData.description}
+          </p>
+        </div>
+
+        <hr className="my-8 border-blue-200" />
+
+        <h3 className="text-2xl font-bold text-blue-900 mb-6">Available Services</h3>
+        <div className="space-y-6">
+          {departmentData.services.map((service, index) => (
+            <div
+              key={index}
+              id={createServiceHash(service)} // Assign ID for scrolling
+              className="bg-blue-50 p-6 rounded-lg border border-blue-200 hover:shadow-md transition-shadow duration-300"
+            >
+              <h4 className="text-xl font-semibold text-blue-800 mb-2">{service}</h4>
+              <p className="text-blue-600">
+                {/* Placeholder for service description or application link */}
+                Details about {service.toLowerCase()}. Click here to apply.
+              </p>
+              {/* You can add a button or link to a specific application form here */}
+              <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                Learn More / Apply
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ElectionCommissionPage;

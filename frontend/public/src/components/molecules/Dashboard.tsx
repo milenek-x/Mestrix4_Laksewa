@@ -1,35 +1,149 @@
 import React from 'react';
-import { Building2, LogOut, FileText, Users, Settings, Bell, Home } from 'lucide-react';
+import { LogOut, FileText, Users, Settings, Bell, Home } from 'lucide-react';
+import Logo from '../../assets/Logo.png';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
+// DepartmentSection component to handle individual department display
+interface DepartmentSectionProps {
+  department: {
+    department: string;
+    services: string[];
+    icon: React.ElementType; // Icon component
+    color: string;
+    description: string;
+    id: string; // Add an ID for navigation
+  };
+  isReversed: boolean; // To control left/right alternation of the service list
+  navigate: ReturnType<typeof useNavigate>; // Pass navigate function as prop
+}
+
+const DepartmentSection: React.FC<DepartmentSectionProps> = ({ department, isReversed, navigate }) => {
+  // Determine the order of the two main columns (department info and services)
+  const flexOrderClasses = isReversed ? 'md:flex-row-reverse' : 'md:flex-row';
+
+  // Function to handle navigation for the department info tile
+  const navigateToDepartment = () => {
+    navigate(`/${department.id}`);
+  };
+
+  // Function to create a URL-friendly hash from a service name
+  const createServiceHash = (serviceName: string) => {
+    return serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  };
+
+  return (
+    <div
+      id={department.id} // Assign the ID to the main div of the section (useful for direct deep linking or if you later add hash routing logic)
+      className={`flex flex-col ${flexOrderClasses} items-stretch w-full
+                   bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-blue-200 hover:shadow-2xl transition-all duration-500`}
+    >
+
+      {/* Department Info Tile - Now navigates to /department-id */}
+      <button
+        onClick={navigateToDepartment}
+        className="flex-shrink-0 w-full md:w-1/2 p-6 text-center cursor-pointer
+                   hover:bg-blue-50/50 transition-all duration-300 rounded-xl" // Added hover effects
+      >
+        <div className="flex flex-col items-center justify-center h-full">
+          <div className={`w-16 h-16 bg-gradient-to-r ${department.color} rounded-full flex items-center justify-center mb-4 shadow-lg`}>
+            <department.icon className="w-8 h-8 text-white" />
+          </div>
+          <h4 className="text-2xl font-semibold text-blue-900 mb-2">
+            {department.department}
+          </h4>
+          <p className="text-blue-700 text-sm">
+            {department.description}
+          </p>
+        </div>
+      </button>
+
+      {/* Services List Tile - Services are now clickable links */}
+      <div className={`flex-grow w-full md:w-1/2 p-6`}>
+        <div className="bg-blue-50 rounded-lg p-5 border border-blue-200 h-full flex flex-col justify-center">
+          <h5 className="text-lg font-semibold text-blue-800 mb-3">Services</h5>
+          <ul className="list-none pl-0 space-y-2"> {/* Removed text-blue-700 from here to allow link styling */}
+            {department.services.map((service, idx) => (
+              <li key={idx} className="flex items-start">
+                <button
+                  onClick={() => navigate(`/${department.id}#${createServiceHash(service)}`)}
+                  className="text-blue-700 hover:text-blue-900 hover:underline cursor-pointer text-left w-full transition-colors duration-200"
+                >
+                  {service}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
-  const services = [
+  const navigate = useNavigate(); // Initialize useNavigate hook
+
+  const ourServicesByDepartment = [
     {
-      icon: FileText,
-      title: 'Document Services',
-      description: 'Birth certificates, passports, and other official documents',
-      color: 'from-blue-500 to-blue-600'
-    },
-    {
+      department: "Election Commission of Sri Lanka",
+      services: [
+        "Voter Registration and Amendments",
+        "Inquiring Election Results",
+        "Obtaining Electoral Register Copies",
+        "Application for Postal Voting"
+      ],
       icon: Users,
-      title: 'Citizen Services',
-      description: 'Registration, ID cards, and citizen information updates',
-      color: 'from-indigo-500 to-indigo-600'
+      color: 'from-blue-500 to-blue-600',
+      description: 'Register to vote, inquire results, and get electoral documents.',
+      id: 'election-commission', // Unique ID
     },
     {
+      department: "Department of Motor Traffic",
+      services: [
+        "New Driving License Application",
+        "Driving License Renewal",
+        "Vehicle Registration",
+        "Vehicle Ownership Transfer",
+        "Revenue License Renewal",
+        "Vehicle Inspection and Fitness Certificates"
+      ],
       icon: Home,
-      title: 'Property Services',
-      description: 'Land registration, property transfers, and certificates',
-      color: 'from-cyan-500 to-cyan-600'
+      color: 'from-indigo-500 to-indigo-600',
+      description: 'Apply for licenses, register vehicles, and manage transfers.',
+      id: 'motor-traffic', // Unique ID
     },
     {
+      department: "Department of Immigration & Emigration",
+      services: [
+        "New Passport Application",
+        "Passport Renewal",
+        "Visa Applications",
+        "Extension of Visa",
+        "Citizenship Application",
+        "Dual Citizenship Application"
+      ],
+      icon: FileText,
+      color: 'from-cyan-500 to-cyan-600',
+      description: 'Apply for passports, visas, and citizenship services.',
+      id: 'immigration-emigration', // Unique ID
+    },
+    {
+      department: "Registrar General's Department",
+      services: [
+        "Obtaining Birth Certificates",
+        "Obtaining Marriage Certificates",
+        "Obtaining Death Certificates",
+        "Correction of Errors in Certificates",
+        "Registration of Certificates"
+      ],
       icon: Settings,
-      title: 'Government Services',
-      description: 'Tax filing, licenses, permits, and government applications',
-      color: 'from-purple-500 to-purple-600'
+      color: 'from-purple-500 to-purple-600',
+      description: 'Obtain and correct birth, marriage, and death certificates.',
+      id: 'registrar-general', // Unique ID
     }
   ];
 
@@ -64,12 +178,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center group">
-              <div className="bg-gradient-to-br from-blue-600 to-blue-700 w-10 h-10 rounded-full flex items-center justify-center mr-3 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <Building2 className="w-6 h-6 text-white" />
+              <img src={Logo} alt="Government Services Portal Logo" className="w-auto h-20 mr-4" />
+              <div className="flex flex-col">
+                <h1 className="text-2xl font-bold text-blue-900 hidden sm:block">
+                  Powered by Mestrix4
+                </h1>
+                <span className="text-blue-700 text-sm hidden sm:block">
+                  Centralized Government Services Portal
+                </span>
               </div>
-              <h1 className="text-2xl font-bold text-blue-900 hover:text-blue-800 transition-colors duration-300">
-                Lanka Sewa Dashboard
-              </h1>
             </div>
             <div className="flex items-center space-x-4">
               <button className="relative p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-300 hover:scale-105">
@@ -111,32 +228,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Services Grid */}
-          <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold text-blue-900 mb-6">Available Services</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {services.map((service, index) => (
-                <div
-                  key={index}
-                  className="bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-blue-200 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-500 cursor-pointer group"
-                >
-                  <div className={`w-12 h-12 bg-gradient-to-r ${service.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                    <service.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <h4 className="text-xl font-semibold text-blue-900 mb-2 group-hover:text-blue-700 transition-colors duration-300">
-                    {service.title}
-                  </h4>
-                  <p className="text-blue-700 group-hover:text-blue-600 transition-colors duration-300">
-                    {service.description}
-                  </p>
-                  <div className="mt-4">
-                    <button className="text-blue-600 hover:text-blue-800 font-medium hover:underline transition-all duration-300 group-hover:translate-x-1">
-                      Learn More →
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {/* Department Sections */}
+          <div className="lg:col-span-2 space-y-8">
+            <h3 className="text-2xl font-bold text-blue-900 mb-6">Government Departments & Services</h3>
+            {ourServicesByDepartment.map((department, index) => (
+              <DepartmentSection
+                key={index}
+                department={department}
+                isReversed={index % 2 !== 0}
+                navigate={navigate} // Pass navigate down to DepartmentSection
+              />
+            ))}
           </div>
 
           {/* Notifications Panel */}
