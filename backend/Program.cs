@@ -69,6 +69,7 @@ builder.Services.AddSingleton<IServiceRepository, ServiceRepository>();
 builder.Services.AddSingleton<IServiceRequestRepository, ServiceRequestRepository>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IUserTypeRepository, UserTypeRepository>();
+builder.Services.AddSingleton<IOtpRepository, OtpRepository>();
 
 // Register all Services as Singletons
 builder.Services.AddSingleton<IAccountSettingsService, AccountSettingsService>();
@@ -86,6 +87,7 @@ builder.Services.AddSingleton<IServiceService, ServiceService>();
 builder.Services.AddSingleton<IServiceRequestService, ServiceRequestService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IUserTypeService, UserTypeService>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
