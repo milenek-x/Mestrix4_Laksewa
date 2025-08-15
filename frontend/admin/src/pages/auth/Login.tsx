@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User2, Lock, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom"; // 👈 add this
+import { Link, useNavigate } from "react-router-dom"; // 👈 added useNavigate
 
 // Your shadcn-style components that already exist in your repo
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +22,7 @@ type LoginForm = z.infer<typeof LoginSchema>;
 
 export default function Login() {
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate(); // 👈 init
 
   const {
     register,
@@ -29,14 +30,13 @@ export default function Login() {
     formState: { errors },
   } = useForm<LoginForm>({ resolver: zodResolver(LoginSchema) });
 
-  // NOTE: For now we only show a toast/console; later wire this to .NET API
+  // For now: fake delay then navigate to main dashboard
   const onSubmit = async (data: LoginForm) => {
     setSubmitting(true);
     try {
-      // call your backend later: await api.post("/auth/login", data)
       await new Promise((r) => setTimeout(r, 900));
       console.log("Login payload", data);
-      alert("Demo: form submitted. Integrate with backend next.");
+      navigate("/app"); // 👈 go to main dashboard
     } finally {
       setSubmitting(false);
     }
@@ -103,7 +103,7 @@ export default function Login() {
                 Remember me
               </label>
 
-              {/* 👇 use Link for client-side navigation */}
+              {/* client-side navigation */}
               <Link to="/forgot-password" className="text-[#231F44] hover:underline">
                 Forget Password?
               </Link>

@@ -46,8 +46,7 @@ export default function Sidebar() {
 
       {/* Brand at bottom */}
       <div className="px-4 py-6 flex items-center gap-3 opacity-90">
-        <img src={logo} alt="Laksewa" className="h-8 w-8 object-contain" />
-        <span className="text-xl font-semibold tracking-wide">LAKSEWA</span>
+        <img src={logo} alt="Laksewa" className="h-15 w-50 object-contain" />
       </div>
     </aside>
   );
