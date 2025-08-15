@@ -1,8 +1,6 @@
 import { LoginForm } from "../molecules/LoginForm"
 import { ModeToggle } from "../ui/mode-toggle"
 
-import { useNavigate } from 'react-router-dom';
-
 export default function Page() {
 
   return (

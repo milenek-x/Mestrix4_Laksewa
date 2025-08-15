@@ -305,6 +305,7 @@ export function ForgotPasswordForm() {
             otpForm.reset();
             passwordForm.reset();
             setFormData({});
+            navigate('/');
           }}>
             Go back to Login
           </Button>
