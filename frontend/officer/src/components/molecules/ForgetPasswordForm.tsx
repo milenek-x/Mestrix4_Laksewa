@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useEffect } from "react"; // Import useEffect
+import { useState, useEffect } from "react";
 import { useForm, FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -35,14 +35,14 @@ import { CardTitle } from "../ui/card";
 
 type FormState = "email" | "otp" | "newPassword" | "success";
 
-// --- Mock Data for UI Validation ---
-const MOCK_VALID_EMAIL = "test@example.com";
-const MOCK_VALID_OTP = "123456";
-// --- End Mock Data ---
+// --- API Base URL ---
+const API_BASE_URL = "http://localhost:5102/api/User"; // Your API base URL
+// --- End API Base URL ---
 
 export function ForgotPasswordForm() {
   const [currentStep, setCurrentStep] = useState<FormState>("email");
-  const [formData, setFormData] = useState<Partial<EmailFormData & OtpFormData & PasswordFormData>>({});
+  // Include userId in formData state
+  const [formData, setFormData] = useState<Partial<EmailFormData & OtpFormData & PasswordFormData & { userId?: string }>>({});
   const [canResendOtp, setCanResendOtp] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
@@ -80,18 +80,15 @@ export function ForgotPasswordForm() {
 
   // Helper function to start the resend OTP timer
   const startResendTimer = () => {
-    setResendTimer(30);
+    setResendTimer(30); // Set timer to 30 seconds
   };
 
   // Helper function to show Zod errors as toasts
   const showZodErrors = (errors: FieldErrors<any>) => {
-    // Clear any existing toasts before showing new ones to prevent clutter
     toast.dismiss(); // Dismiss all current toasts
 
-    // Get all unique error messages
     const errorMessages = new Set<string>();
     Object.values(errors).forEach(errorField => {
-      // Handle array errors
       if (Array.isArray(errorField)) {
         errorField.forEach(err => {
           if (err && typeof err === 'object' && 'message' in err) {
@@ -103,7 +100,6 @@ export function ForgotPasswordForm() {
       }
     });
 
-    // Show each unique error message as a toast
     errorMessages.forEach(message => {
       toast.error(message);
     });
@@ -112,53 +108,138 @@ export function ForgotPasswordForm() {
   const handleEmailSubmit = async (data: EmailFormData) => {
     console.log("Submitting email:", data.email);
     emailForm.clearErrors("email");
+    toast.loading("Checking email and sending OTP...", { id: "email-check" });
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // 1. Check if user exists
+      const existsResponse = await fetch(`${API_BASE_URL}/exists`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: data.email }),
+      });
 
-    if (data.email === MOCK_VALID_EMAIL) {
-      setFormData((prev) => ({ ...prev, ...data }));
+      const existsData = await existsResponse.json();
+
+      // Check if the response is OK and if userId is present
+      // existsData.userId will be present if user exists, and it'll be null if not found
+      if (!existsResponse.ok || !existsData.userId) { // Check for existsData.userId
+        toast.error("We could not find an account with that email address. Please try again.", { id: "email-check" });
+        return;
+      }
+
+      // 2. Send OTP if user exists
+      const sendOtpResponse = await fetch(`${API_BASE_URL}/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: data.email }),
+      });
+
+      if (!sendOtpResponse.ok) {
+        const errorData = await sendOtpResponse.json();
+        throw new Error(errorData.message || "Failed to send OTP. Please try again.");
+      }
+
+      // Store email and userId in formData
+      setFormData((prev) => ({ ...prev, ...data, userId: existsData.userId }));
       setCurrentStep("otp");
-      toast.success("OTP sent to your email!");
+      toast.success("OTP sent to your email!", { id: "email-check" });
       startResendTimer(); // Start timer after OTP is sent
-    } else {
-      const errorMessage = "We could not find an account with that email address. Please try again.";
-      toast.error(errorMessage);
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred. Please try again.", { id: "email-check" });
+      console.error("Email submission error:", error);
     }
   };
 
   const handleOtpSubmit = async (data: OtpFormData) => {
     console.log("Verifying OTP:", data.otp);
     otpForm.clearErrors("otp");
+    toast.loading("Verifying OTP...", { id: "otp-verify" });
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const verifyOtpResponse = await fetch(`${API_BASE_URL}/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.email, otpCode: data.otp }),
+      });
 
-    if (data.otp === MOCK_VALID_OTP) {
+      if (!verifyOtpResponse.ok) {
+        const errorData = await verifyOtpResponse.json();
+        throw new Error(errorData.message || "Invalid or expired OTP. Please try again.");
+      }
+
       setFormData((prev) => ({ ...prev, ...data }));
       setCurrentStep("newPassword");
-      toast.success("OTP verified successfully!");
+      toast.success("OTP verified successfully!", { id: "otp-verify" });
       setResendTimer(0); // Reset timer when moving past OTP step
-    } else {
-      const errorMessage = "The OTP you entered is incorrect or has expired. Please try again.";
-      toast.error(errorMessage);
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred during OTP verification. Please try again.", { id: "otp-verify" });
+      console.error("OTP verification error:", error);
     }
   };
 
   const handleResendOtp = async () => {
     console.log("Resending OTP to:", formData.email);
-    // Here you would typically make an API call to resend the OTP
-    // For this example, we'll just simulate it.
-    toast.info("Resending OTP...");
-    startResendTimer(); // Restart the timer
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast.success("New OTP sent!");
+    toast.info("Resending OTP...", { id: "resend-otp" });
+
+    try {
+      const sendOtpResponse = await fetch(`${API_BASE_URL}/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      if (!sendOtpResponse.ok) {
+        const errorData = await sendOtpResponse.json();
+        throw new Error(errorData.message || "Failed to resend OTP. Please try again.");
+      }
+
+      startResendTimer(); // Restart the timer
+      toast.success("New OTP sent!", { id: "resend-otp" });
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred while resending OTP. Please try again.", { id: "resend-otp" });
+      console.error("Resend OTP error:", error);
+    }
   };
 
   const handlePasswordSubmit = async (data: PasswordFormData) => {
     console.log("Setting new password:", data.newPassword);
-    setFormData((prev) => ({ ...prev, ...data }));
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setCurrentStep("success");
-    toast.success("Your password has been successfully reset!");
+    toast.loading("Resetting password...", { id: "password-reset" });
+
+    if (!formData.userId) {
+      toast.error("User ID not found. Please restart the password reset process.", { id: "password-reset" });
+      console.error("User ID is missing from formData for password reset.");
+      return;
+    }
+
+    try {
+      const resetPasswordResponse = await fetch(`${API_BASE_URL}/${formData.userId}/reset-password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newPassword: data.newPassword }), // Send only newPassword
+      });
+
+      if (!resetPasswordResponse.ok) {
+        const errorData = await resetPasswordResponse.json();
+        throw new Error(errorData.message || "Failed to reset password. Please try again.");
+      }
+
+      setFormData((prev) => ({ ...prev, ...data }));
+      setCurrentStep("success");
+      toast.success("Your password has been successfully reset!", { id: "password-reset" });
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred during password reset. Please try again.", { id: "password-reset" });
+      console.error("Password reset error:", error);
+    }
   };
 
   // --- Dynamic Title Logic ---
@@ -251,7 +332,7 @@ export function ForgotPasswordForm() {
               variant="link"
               onClick={handleResendOtp}
               className="w-full"
-              disabled={!canResendOtp} // Disable if timer is active
+              disabled={!canResendOtp}
             >
               {canResendOtp ? "Resend OTP" : `Resend OTP in ${resendTimer}s`}
             </Button>
@@ -304,7 +385,7 @@ export function ForgotPasswordForm() {
             emailForm.reset();
             otpForm.reset();
             passwordForm.reset();
-            setFormData({});
+            setFormData({}); // Clear all form data, including userId
             navigate('/');
           }}>
             Go back to Login
