@@ -55,7 +55,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegister }) =>
         {/* Header */}
         <div className="text-center mb-8">
           <img src={Logo} alt="Government Services Portal Logo" className="w-32 h-auto mx-auto mb-4" />
-          <p className="text-blue-700">Government Services Portal</p>
+          <p className="text-blue-700">Sign up to your government services account</p>
         </div>
 
         {/* Login Card */}
@@ -69,7 +69,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegister }) =>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-blue-800 font-medium mb-2">Email Address</label>
+              <label className="block text-blue-800 font-medium mb-2 text-left">Email Address</label>
               <div className="relative group">
                 <Mail className="w-5 h-5 text-blue-400 absolute left-3 top-1/2 transform -translate-y-1/2 group-hover:text-blue-600 transition-colors duration-300" />
                 <input
@@ -84,7 +84,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegister }) =>
             </div>
 
             <div>
-              <label className="block text-blue-800 font-medium mb-2">Password</label>
+              <label className="block text-blue-800 font-medium mb-2 text-left">Password</label>
               <div className="relative group">
                 <Lock className="w-5 h-5 text-blue-400 absolute left-3 top-1/2 transform -translate-y-1/2 group-hover:text-blue-600 transition-colors duration-300" />
                 <input
