@@ -13,6 +13,7 @@ import Roles from "./pages/roles/Role";
 import UserList from "./pages/users/UserList";
 import DepartmentList from "./pages/departments/DepartmentList";
 import ServiceList from "./pages/services/ServiceList";
+import ProfileSettings from "./pages/settings/ProfileSettings";
 import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       { path: "users", element: <UserList /> },
       { path: "departments", element: <DepartmentList /> },
       { path: "services", element: <ServiceList /> },
-      { path: "settings", element: <div>Setting</div> },
+      { path: "settings", element: <ProfileSettings /> },
     ],
   },
 ]);
