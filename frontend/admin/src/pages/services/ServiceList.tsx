@@ -2,18 +2,19 @@ import { useMemo, useState } from "react";
 import { Search, Plus, Pencil, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import AddServiceDialog from "./AddServiceDialog";
+import type { AddServiceForm } from "./AddServiceDialog";
 
 type Service = {
   id: string;
   serviceName: string;
   description: string;
   requirements: string;
-  processingTime: string; // e.g., "3 days"
-  feeAmount: number;      // currency
-  department: string;     // shown name for now (later: FK -> department)
+  processingTime: string;
+  feeAmount: number;
+  department: string;
 };
 
-// demo data (replace with API later)
 const SEED: Service[] = [
   {
     id: "s1",
@@ -45,10 +46,15 @@ const SEED: Service[] = [
 ];
 
 const money = (n: number) =>
-  new Intl.NumberFormat(undefined, { style: "currency", currency: "LKR", maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "LKR",
+    maximumFractionDigits: 0,
+  }).format(n);
 
 export default function ServiceList() {
   const [q, setQ] = useState("");
+  const [openAdd, setOpenAdd] = useState(false);
 
   const services = useMemo(() => {
     if (!q.trim()) return SEED;
@@ -64,16 +70,16 @@ export default function ServiceList() {
     );
   }, [q]);
 
-  const onAdd = () => {
-    // later: open Add Service modal / navigate to /app/services/new
-    console.log("Add service");
+  const onAdd = () => setOpenAdd(true);
+  const onCreated = (payload: AddServiceForm) => {
+    // later: POST to API and refetch
+    console.log("Created service (demo):", payload);
   };
   const onEdit = (sv: Service) => console.log("Edit", sv.id);
   const onDelete = (sv: Service) => console.log("Delete", sv.id);
 
   return (
     <div className="space-y-4">
-      {/* top actions */}
       <div className="flex items-center justify-between gap-3">
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-60" />
@@ -94,7 +100,6 @@ export default function ServiceList() {
         </Button>
       </div>
 
-      {/* table */}
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -161,6 +166,9 @@ export default function ServiceList() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add Service modal */}
+      <AddServiceDialog open={openAdd} onOpenChange={setOpenAdd} onCreated={onCreated} />
     </div>
   );
 }
