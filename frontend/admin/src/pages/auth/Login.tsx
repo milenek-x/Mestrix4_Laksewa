@@ -1,14 +1,18 @@
-import { useState } from "react";
+// src/pages/auth/Login.tsx
+import { useState, useContext } from "react"; // Add useContext
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User2, Lock, Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom"; // 👈 added useNavigate
+import { Link, useNavigate } from "react-router-dom";
 
 // Your shadcn-style components that already exist in your repo
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/laksewa-logo.png";
+
+// Import AuthContext
+import { AuthContext } from "@/context/AuthContext"; // Adjust the path as per your file structure
 
 // ---- Validation schema ----
 const LoginSchema = z.object({
@@ -22,7 +26,11 @@ type LoginForm = z.infer<typeof LoginSchema>;
 
 export default function Login() {
   const [submitting, setSubmitting] = useState(false);
-  const navigate = useNavigate(); // 👈 init
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  // Consume AuthContext
+  const { setUserId } = useContext(AuthContext);
 
   const {
     register,
@@ -30,13 +38,42 @@ export default function Login() {
     formState: { errors },
   } = useForm<LoginForm>({ resolver: zodResolver(LoginSchema) });
 
-  // For now: fake delay then navigate to main dashboard
   const onSubmit = async (data: LoginForm) => {
     setSubmitting(true);
+    setLoginError(null);
     try {
-      await new Promise((r) => setTimeout(r, 900));
-      console.log("Login payload", data);
-      navigate("/app"); // 👈 go to main dashboard
+      const response = await fetch("http://localhost:5102/api/User/authenticate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          UsernameOrEmail: data.identity,
+          Password: data.password,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Login successful:", result);
+
+        const userId = result.userId;
+        // Set userId in the AuthContext
+        setUserId(userId);
+        // Optionally, store the token and userId in localStorage for persistence across browser sessions
+        localStorage.setItem("authToken", result.token);
+        localStorage.setItem("userId", userId);
+
+        navigate("/app");
+      } else {
+        const errorData = await response.json();
+        const errorMessage = errorData.message || "Invalid username/email or password.";
+        setLoginError(errorMessage);
+        console.error("Login failed:", errorMessage);
+      }
+    } catch (err) {
+      setLoginError("An unexpected error occurred. Please try again.");
+      console.error("Login error:", err);
     } finally {
       setSubmitting(false);
     }
@@ -46,7 +83,6 @@ export default function Login() {
     <main className="min-h-screen grid place-items-center bg-[#F5F7F9] p-4">
       <Card className="w-full max-w-md rounded-2xl shadow-lg">
         <CardHeader className="items-center space-y-4">
-          {/* Logo */}
           <img src={logo} alt="Laksewa" className="h-30 w-30 object-contain" />
           <div className="text-center">
             <CardTitle className="text-2xl mt-1">LOGIN</CardTitle>
@@ -54,7 +90,6 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Username / Email */}
             <div className="space-y-1">
               <label className="text-sm font-medium" htmlFor="identity">
                 Username or email
@@ -75,7 +110,6 @@ export default function Login() {
               )}
             </div>
 
-            {/* Password */}
             <div className="space-y-1">
               <label className="text-sm font-medium" htmlFor="password">
                 Password
@@ -96,18 +130,20 @@ export default function Login() {
               )}
             </div>
 
-            {/* Meta row */}
             <div className="flex items-center justify-between text-sm">
               <label className="inline-flex items-center gap-2">
                 <input type="checkbox" className="size-4" {...register("remember")} />
                 Remember me
               </label>
 
-              {/* client-side navigation */}
               <Link to="/forgot-password" className="text-[#231F44] hover:underline">
                 Forget Password?
               </Link>
             </div>
+
+            {loginError && (
+              <p className="text-sm text-red-600 text-center">{loginError}</p>
+            )}
 
             <Button
               type="submit"

@@ -11,6 +11,7 @@ import ForgotPasswordCode from "./pages/auth/ForgotPasswordCode";
 import ForgotPasswordReset from "./pages/auth/ForgotPasswordReset";
 import Dashboard from "./pages/dashboard/Dashboard";
 import UserList from "./pages/users/UserList";
+import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
 
 const router = createBrowserRouter([
   // Public / Auth routes
@@ -36,6 +37,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    {/* Wrap your entire application with AuthProvider */}
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>
 );

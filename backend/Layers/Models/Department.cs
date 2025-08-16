@@ -10,7 +10,7 @@ namespace backend.Layers.Models
         public string? Id { get; set; }
         public string? DepartmentName { get; set; }
         public string? Description { get; set; }
-        public string? Location { get; set; }
+        public string? Address { get; set; }
         
         [BsonRepresentation(BsonType.ObjectId)]
         public string? HeadOfDepartmentId { get; set; }
