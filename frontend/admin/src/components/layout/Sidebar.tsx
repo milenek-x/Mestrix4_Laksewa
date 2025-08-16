@@ -1,16 +1,16 @@
 import { NavLink } from "react-router-dom";
 import {
-  LayoutDashboard,
   Users,
   Building2,
   Handshake,
   Settings,
+  User,
 } from "lucide-react";
 import logo from "@/assets/logo-h.png";
 
 const nav = [
-  { to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/app/users", label: "User Management", icon: Users },
+  { to: "/app/roles", label: "Roles", icon: User },
   { to: "/app/departments", label: "Department Management", icon: Building2 },
   { to: "/app/services", label: "Service Management", icon: Handshake },
   { to: "/app/settings", label: "Setting", icon: Settings },
