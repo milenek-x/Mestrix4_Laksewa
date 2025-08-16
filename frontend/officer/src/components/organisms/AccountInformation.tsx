@@ -43,8 +43,31 @@ export function AccountInformation({
   className,
   ...props
 }: AccountInformationProps) {
-
   const { userData } = useUser();
+  const [departmentName, setDepartmentName] = React.useState<string>("N/A"); // State to hold department name
+
+  // Effect to fetch department name when userData or departmentId changes
+  React.useEffect(() => {
+    const fetchDepartmentName = async () => {
+      if (userData?.departmentId) {
+        try {
+          const response = await fetch(`http://localhost:5102/api/Department/${userData.departmentId}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          setDepartmentName(data.departmentName);
+        } catch (error) {
+          console.error('Error fetching department name:', error);
+          setDepartmentName("N/A"); // Fallback on error
+        }
+      } else {
+        setDepartmentName("N/A"); // If no departmentId
+      }
+    };
+
+    fetchDepartmentName();
+  }, [userData?.departmentId]); // Dependency array: re-run when departmentId changes
 
   if (!userData) {
     return (
@@ -65,37 +88,30 @@ export function AccountInformation({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="w-full"> {/* Card now always takes the available width */}
+      <Card className="w-full">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-2xl font-bold">
             Account Information
           </CardTitle>
           <Button
             variant="outline"
-            size="icon" // Default to icon size for smaller screens
+            size="icon"
             onClick={handleEditAccount}
             aria-label="Edit Account Information"
-            className="sm:px-4 sm:py-2 sm:h-auto" // Adjust padding for larger screens to fit text
+            className="sm:px-4 sm:py-2 sm:h-auto"
           >
-            {/* Pencil icon will now always be visible */}
-            <Pencil className="h-4 w-4" /> 
-            {/* The text "Edit Account" will no longer be displayed */}
-            {/* <span className="hidden sm:inline">Edit Account</span> */}
+            <Pencil className="h-4 w-4" />
           </Button>
         </CardHeader>
         <CardContent className="grid gap-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
-             <AccountField label="Employee ID" value={userData.id} />
+          {/* Changed grid layout for responsiveness */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             <AccountField label="Full Name" value={fullName} />
-            {/* These fields are not in the API response, so we'll use placeholders for now */}
-            <AccountField label="Position" value="N/A" />
-            <AccountField label="Division" value="N/A" />
-            <AccountField label="Department" value="N/A" />
+            <AccountField label="Department" value={departmentName} />
             <AccountField label="Contact Number" value={userData.phoneNumber} />
             <AccountField
               label="Email Address"
               value={userData.email}
-              className="col-span-1 sm:col-span-2 lg:col-span-3"
             />
           </div>
         </CardContent>

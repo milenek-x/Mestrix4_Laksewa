@@ -1,4 +1,3 @@
-// src/components/layout/AppSidebar.tsx
 "use client"
 
 import * as React from "react"
@@ -11,6 +10,7 @@ import {
   CalendarCheck,
   MessageSquare,
   LogOut,
+  Building2,
 } from "lucide-react"
 
 import { NavMain } from "../molecules/NavMain"
@@ -50,13 +50,13 @@ const navMainItems = [
     url: "/dashboard",
     icon: LayoutDashboard,
   },
+  // {
+  //   title: "Appointments",
+  //   url: "/appointments",
+  //   icon: CalendarCheck,
+  // },
   {
-    title: "Appointments",
-    url: "/appointments",
-    icon: CalendarCheck,
-  },
-  {
-    title: "Review",
+    title: "Service Requests",
     url: "/review",
     icon: FileText,
   },
@@ -69,6 +69,28 @@ const navMainItems = [
     title: "Analytics",
     url: "/analytics",
     icon: BarChart,
+    subItems: [
+      {
+        title: "Motor Traffic",
+        url: "/analytics/motor-traffic",
+        icon: Building2, // Example icon for a department
+      },
+      {
+        title: "Immigration & Emigration",
+        url: "/analytics/immigration",
+        icon: Building2,
+      },
+      {
+        title: "Registrar General",
+        url: "/analytics/registrar-general",
+        icon: Building2,
+      },
+      {
+        title: "Election Commission",
+        url: "/analytics/election-commission",
+        icon: Building2,
+      },
+    ],
   },
 ];
 
