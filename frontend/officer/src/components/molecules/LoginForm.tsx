@@ -17,7 +17,7 @@ import { Loader2Icon } from "lucide-react";
 import Logo from '../../assets/Logo.png';
 
 // Import the useUser hook from your context
-import { useUser } from '@/components/context/UserContext'; // Adjust the path if necessary
+import { useUser } from '@/components/context/UserContext';
 
 export function LoginForm({
   className,
@@ -46,7 +46,7 @@ export function LoginForm({
     }
 
     try {
-      const response = await fetch("http://localhost:5102/api/User/authenticate", {
+      const authResponse = await fetch("http://localhost:5102/api/User/authenticate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,20 +57,38 @@ export function LoginForm({
         }),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        toast.success("Login successful! Redirecting...");
-        console.log("Login successful:", result);
+      if (authResponse.ok) {
+        const authResult = await authResponse.json();
+        console.log("Login successful:", authResult);
 
-        const userId = result.userId; // Assuming your API response has 'userId'
-        
-        // Set the userId in your global context
-        setUserId(userId); 
+        const userId = authResult.userId;
+        const roleId = authResult.roleId; // Get roleId from authentication response
 
-        // Now navigate without passing userId in state, as it's in context
-        navigate("/dashboard"); 
+        if (!roleId) {
+          toast.error("Role information is missing. Please contact support.");
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch role details
+        const roleResponse = await fetch(`http://localhost:5102/api/Role/${roleId}`);
+        if (roleResponse.ok) {
+          const roleData = await roleResponse.json();
+          const roleName = roleData.roleName; // Assuming the role API returns 'roleName'
+
+          if (roleName === "Department Head") {
+            toast.success("Login successful! Redirecting...");
+            setUserId(userId);
+            navigate("/dashboard");
+          } else {
+            toast.error("Access denied. Only Department Heads can log in here.");
+          }
+        } else {
+          toast.error("Failed to retrieve role information. Please try again.");
+          console.error("Failed to fetch role:", roleResponse.statusText);
+        }
       } else {
-        const errorData = await response.json();
+        const errorData = await authResponse.json();
         toast.error(errorData.message || "Invalid username/email or password.");
         console.error("Login failed:", errorData);
       }
