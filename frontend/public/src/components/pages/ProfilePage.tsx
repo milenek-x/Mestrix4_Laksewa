@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { User, Edit3, Save, X, Mail, Phone, MapPin, Calendar, Shield, Clock, FileText, CheckCircle, AlertCircle, Eye, Download, ArrowLeft, Bell, LogOut, Search, Camera } from 'lucide-react';
+import { User, Edit3, Save, X, Mail, Phone, MapPin, Calendar, Shield, Clock, FileText, CheckCircle, AlertCircle, Eye, Download, ArrowLeft, Bell, LogOut, Camera } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import user from '../../assets/user.jpg';
 
-const ProfilePage = () => {
+interface ProfilePageProps {
+  onLogout?: () => void;
+}
+
+const ProfilePage: React.FC<ProfilePageProps> = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -16,6 +22,14 @@ const ProfilePage = () => {
   });
 
   const [tempData, setTempData] = useState({ ...profileData });
+  const navigate = useNavigate();
+
+  // Navigation function for logout - navigates to landing page
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
 
   // Mock service history data
   const serviceHistory = [
@@ -369,11 +383,11 @@ const ProfilePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">L</span>
+              <div className="bg-transparent backdrop-blur-md">
+                <img src={user} alt="LakSewa Logo" className="w-auto h-15 mx-auto mr-2" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent text-left">
                   My Profile
                 </h1>
                 <p className="text-blue-600/80 text-sm">Manage your account settings</p>
@@ -381,15 +395,6 @@ const ProfilePage = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-10 pr-4 py-2 bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200 rounded-full focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                />
-              </div>
-              
               <button className="relative p-3 text-blue-500 hover:text-white hover:bg-gradient-to-br from-sky-400 to-blue-500 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg border border-blue-300 hover:border-transparent">
                 <Bell className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-400 to-rose-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg animate-pulse">
@@ -397,7 +402,10 @@ const ProfilePage = () => {
                 </span>
               </button>
               
-              <button className="flex items-center bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg group">
+              <button 
+                onClick={handleLogout}
+                className="flex items-center bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg group"
+              >
                 <LogOut className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
                 Logout
               </button>

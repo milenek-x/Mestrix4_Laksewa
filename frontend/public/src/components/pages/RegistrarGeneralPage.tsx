@@ -1,24 +1,26 @@
-// src/pages/RegistrarGeneralPage.tsx
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Settings, LogOut, Bell, ArrowLeft, CheckCircle, FileText, Award } from 'lucide-react';
-import Logo1 from '../../assets/Logo.png'; // Adjust path as needed
+import { Settings, LogOut, Bell, ArrowLeft, CheckCircle, FileText, Award, User, Calendar, MapPin, Phone, Mail, Upload, FileImage, Send, X } from 'lucide-react';
 
 interface RegistrarGeneralPageProps {
   onLogout?: () => void;
 }
 
+interface FormData {
+  [key: string]: string | File | null;
+}
+
 const RegistrarGeneralPage: React.FC<RegistrarGeneralPageProps> = ({ onLogout }) => {
-  const { id } = useParams<{ id?: string }>();
-  const location = useLocation();
-  const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
+  const [formData, setFormData] = useState<FormData>({});
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File }>({});
+  const [currentHash, setCurrentHash] = useState(window.location.hash);
 
   const departmentData = {
     department: "Registrar General's Department",
     services: [
       "Obtaining Birth Certificates",
-      "Obtaining Marriage Certificates",
+      "Obtaining Marriage Certificates", 
       "Obtaining Death Certificates",
       "Correction of Errors in Certificates",
       "Registration of Certificates"
@@ -26,14 +28,16 @@ const RegistrarGeneralPage: React.FC<RegistrarGeneralPageProps> = ({ onLogout })
     icon: Settings,
     color: 'from-indigo-300 to-violet-400',
     bgGradient: 'bg-gradient-to-br from-indigo-200 via-purple-300 to-violet-400',
-    description: 'Obtain and correct birth, marriage, and death certificates.',
+    description: 'Obtain and correct birth, marriage, and death certificates online.',
     id: 'registrar-general',
   };
 
+  // Function to create a URL-friendly hash from a service name
   const createServiceHash = (serviceName: string) => {
     return serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   };
 
+  // Function to get service from hash
   const getServiceFromHash = (hash: string) => {
     if (!hash) return null;
     const serviceHash = hash.substring(1);
@@ -42,111 +46,117 @@ const RegistrarGeneralPage: React.FC<RegistrarGeneralPageProps> = ({ onLogout })
     ) || null;
   };
 
+  // Handle service selection and URL updates
   useEffect(() => {
-    const service = getServiceFromHash(location.hash);
+    const service = getServiceFromHash(currentHash);
     setSelectedService(service);
-  }, [location.hash]);
+  }, [currentHash]);
+
+  // Listen for hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentHash(window.location.hash);
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const getServiceContent = (serviceName: string) => {
     const serviceContent: { [key: string]: { description: string; requirements: string[]; process: string[] } } = {
       "Obtaining Birth Certificates": {
-        description: "Obtain certified copies of birth certificates for official purposes including passport applications, school admissions, and legal proceedings.",
+        description: "Obtain certified copies of birth certificates online for official purposes including passport applications, school admissions, and legal proceedings.",
         requirements: [
-          "National Identity Card of applicant or parent",
-          "Completed application form (Form 1)",
+          "National Identity Card of applicant or parent (Digital Copy)",
           "Birth registration number (if available)",
-          "Parent's marriage certificate (if applicable)",
-          "Hospital discharge summary or midwife report",
-          "Fee payment receipt",
-          "Affidavit if applying after one year of birth"
+          "Parent's marriage certificate (Digital Copy if applicable)",
+          "Hospital discharge summary or midwife report (Digital Copy)",
+          "Recent passport-sized photograph (Digital Upload)",
+          "Affidavit if applying after one year of birth (Digital Upload)"
         ],
         process: [
-          "Obtain application form from Registrar's office or online",
-          "Complete form with accurate birth details",
-          "Gather all required supporting documents",
-          "Submit application at relevant Divisional Secretariat",
-          "Pay prescribed fees at the counter",
-          "Collect birth certificate within 7-14 working days"
+          "Complete the online application form through Start Application button",
+          "Upload required documents through our secure digital portal",
+          "Make online payment for certificate fees via our payment gateway",
+          "Submit the completed form via our online system",
+          "Track application status in real-time through our online portal",
+          "Download certified digital birth certificate or receive via registered mail within 7-14 working days"
         ]
       },
       "Obtaining Marriage Certificates": {
-        description: "Obtain official marriage certificates for couples married under different marriage laws in Sri Lanka.",
+        description: "Obtain official marriage certificates online for couples married under different marriage laws in Sri Lanka.",
         requirements: [
-          "National Identity Cards of both spouses",
-          "Original marriage register entry details",
-          "Completed application form for marriage certificate",
+          "National Identity Cards of both spouses (Digital Copies)",
           "Marriage registration number",
-          "Witnesses' details and signatures",
-          "Certificate fee payment",
-          "Marriage celebrant's certification"
+          "Completed online application form",
+          "Marriage celebrant's certification (Digital Copy)",
+          "Witnesses' details and digital signatures",
+          "Recent photographs of both spouses (Digital Upload)"
         ],
         process: [
-          "Locate marriage registration office where ceremony was registered",
-          "Complete marriage certificate application form",
-          "Provide marriage registration details and reference number",
-          "Submit application with required documents",
-          "Pay applicable certificate fees",
-          "Receive certified marriage certificate copy"
+          "Complete online marriage certificate application through Start Application button",
+          "Upload marriage registration details and required documents via secure portal",
+          "Provide marriage registration reference number in the online form",
+          "Complete secure online payment for certificate fees",
+          "Submit application through our digital platform",
+          "Receive certified marriage certificate digitally or via registered mail within 5-10 working days"
         ]
       },
       "Obtaining Death Certificates": {
-        description: "Obtain official death certificates required for legal, financial, and administrative purposes following a person's death.",
+        description: "Obtain official death certificates online required for legal, financial, and administrative purposes following a person's death.",
         requirements: [
-          "Death registration details and reference number",
-          "National Identity Card of deceased person",
-          "Applicant's identification (next of kin or authorized person)",
-          "Completed death certificate application form",
-          "Medical certificate of cause of death",
-          "Certificate fee payment",
-          "Legal authorization if not immediate family member"
+          "Death registration reference number",
+          "National Identity Card of deceased person (Digital Copy)",
+          "Applicant's identification (next of kin or authorized person) (Digital Copy)",
+          "Medical certificate of cause of death (Digital Copy)",
+          "Legal authorization letter if not immediate family member (Digital Upload)",
+          "Recent photograph of applicant for verification (Digital Upload)"
         ],
         process: [
-          "Report death to local Registrar within 14 days",
-          "Complete death certificate application form",
-          "Provide death registration reference number",
-          "Submit application with supporting documents",
-          "Pay prescribed certificate fees",
-          "Collect official death certificate within specified timeframe"
+          "Complete online death certificate application through Start Application button",
+          "Upload death registration reference number and supporting documents",
+          "Provide deceased person's details through secure online form",
+          "Complete online payment for certificate fees",
+          "Submit application via our digital platform",
+          "Receive official death certificate digitally or via registered mail within 5-10 working days"
         ]
       },
       "Correction of Errors in Certificates": {
-        description: "Correct factual errors, spelling mistakes, or incorrect information in existing birth, marriage, or death certificates.",
+        description: "Correct factual errors, spelling mistakes, or incorrect information in existing birth, marriage, or death certificates through our online portal.",
         requirements: [
-          "Original certificate containing the error",
-          "Completed error correction application form",
-          "Supporting documents proving correct information",
-          "Affidavit explaining the error and correct details",
-          "National Identity Cards of relevant persons",
-          "Correction fee payment",
-          "Legal documentation supporting the correction"
+          "Original certificate containing the error (Digital Copy)",
+          "Supporting documents proving correct information (Digital Copies)",
+          "Sworn affidavit explaining the error and correct details (Digital Upload)",
+          "National Identity Cards of relevant persons (Digital Copies)",
+          "Legal documentation supporting the correction (Digital Upload)",
+          "Recent photographs for identity verification (Digital Upload)"
         ],
         process: [
-          "Identify and document the specific error in certificate",
-          "Gather evidence supporting the correct information",
-          "Complete error correction application form",
-          "Submit application with original certificate and proof",
-          "Pay correction processing fees",
-          "Receive corrected certificate after verification process"
+          "Complete online error correction application through Start Application button",
+          "Upload original certificate and evidence supporting correct information",
+          "Provide detailed explanation of errors through online form",
+          "Submit sworn affidavit and supporting documentation via secure portal",
+          "Complete online payment for correction processing fees",
+          "Receive corrected certificate after online verification process within 10-15 working days"
         ]
       },
       "Registration of Certificates": {
-        description: "Register vital events including births, marriages, and deaths that occurred within Sri Lanka or to Sri Lankan citizens abroad.",
+        description: "Register vital events including births, marriages, and deaths online that occurred within Sri Lanka or to Sri Lankan citizens abroad.",
         requirements: [
-          "Completed registration form for the specific event",
-          "Supporting documents proving the event occurred",
-          "National Identity Cards of parties involved",
-          "Hospital records, medical certificates, or official reports",
-          "Witness statements and signatures",
-          "Registration fee payment",
-          "Translator certification for foreign documents"
+          "Supporting documents proving the event occurred (Digital Copies)",
+          "National Identity Cards of parties involved (Digital Copies)",
+          "Hospital records, medical certificates, or official reports (Digital Copies)",
+          "Witness statements and digital signatures",
+          "Recent photographs of parties involved (Digital Upload)",
+          "Translator certification for foreign documents (Digital Upload if applicable)"
         ],
         process: [
-          "Report vital event within stipulated time period",
-          "Complete appropriate registration form",
-          "Gather all supporting documentation and evidence",
-          "Submit application at correct Registrar's office",
-          "Pay registration fees and processing charges",
-          "Receive registration confirmation and reference number"
+          "Complete online registration application through Start Application button",
+          "Upload all supporting documentation and evidence via secure portal",
+          "Provide witness statements through digital signature system",
+          "Submit completed application through our online platform",
+          "Complete online payment for registration fees and processing charges",
+          "Receive registration confirmation and reference number via email within 7-14 days"
         ]
       }
     };
@@ -158,18 +168,220 @@ const RegistrarGeneralPage: React.FC<RegistrarGeneralPageProps> = ({ onLogout })
     };
   };
 
+  // Get form fields based on service type
+  const getFormFields = (serviceName: string) => {
+    const formFields: { [key: string]: any[] } = {
+      "Obtaining Birth Certificates": [
+        { name: 'childFullName', label: 'Full Name of Child', type: 'text', required: true, icon: User },
+        { name: 'dateOfBirth', label: 'Date of Birth', type: 'date', required: true, icon: Calendar },
+        { name: 'placeOfBirth', label: 'Place of Birth', type: 'text', required: true, icon: MapPin },
+        { name: 'fatherName', label: 'Father\'s Full Name', type: 'text', required: true, icon: User },
+        { name: 'motherName', label: 'Mother\'s Full Name', type: 'text', required: true, icon: User },
+        { name: 'applicantNIC', label: 'Applicant\'s NIC Number', type: 'text', required: true, icon: FileText },
+        { name: 'birthRegNumber', label: 'Birth Registration Number (if available)', type: 'text', required: false, icon: FileText },
+        { name: 'phone', label: 'Contact Number', type: 'tel', required: true, icon: Phone },
+        { name: 'email', label: 'Email Address', type: 'email', required: true, icon: Mail },
+        { name: 'applicantNICCopy', label: 'Applicant\'s NIC Copy', type: 'file', required: true, icon: Upload },
+        { name: 'hospitalRecord', label: 'Hospital Discharge Summary/Midwife Report', type: 'file', required: true, icon: Upload },
+        { name: 'parentsMarriageCert', label: 'Parents\' Marriage Certificate (if applicable)', type: 'file', required: false, icon: Upload },
+        { name: 'photograph', label: 'Recent Passport-sized Photograph', type: 'file', required: true, icon: FileImage }
+      ],
+      "Obtaining Marriage Certificates": [
+        { name: 'husbandName', label: 'Husband\'s Full Name', type: 'text', required: true, icon: User },
+        { name: 'wifeName', label: 'Wife\'s Full Name', type: 'text', required: true, icon: User },
+        { name: 'marriageDate', label: 'Date of Marriage', type: 'date', required: true, icon: Calendar },
+        { name: 'marriagePlace', label: 'Place of Marriage', type: 'text', required: true, icon: MapPin },
+        { name: 'marriageRegNumber', label: 'Marriage Registration Number', type: 'text', required: true, icon: FileText },
+        { name: 'husbandNIC', label: 'Husband\'s NIC Number', type: 'text', required: true, icon: FileText },
+        { name: 'wifeNIC', label: 'Wife\'s NIC Number', type: 'text', required: true, icon: FileText },
+        { name: 'celebrantName', label: 'Marriage Celebrant\'s Name', type: 'text', required: true, icon: User },
+        { name: 'phone', label: 'Contact Number', type: 'tel', required: true, icon: Phone },
+        { name: 'email', label: 'Email Address', type: 'email', required: true, icon: Mail },
+        { name: 'husbandNICCopy', label: 'Husband\'s NIC Copy', type: 'file', required: true, icon: Upload },
+        { name: 'wifeNICCopy', label: 'Wife\'s NIC Copy', type: 'file', required: true, icon: Upload },
+        { name: 'celebrantCert', label: 'Celebrant\'s Certification', type: 'file', required: true, icon: Upload },
+        { name: 'marriagePhotos', label: 'Recent Photographs of Both Spouses', type: 'file', required: true, icon: FileImage }
+      ],
+      "Obtaining Death Certificates": [
+        { name: 'deceasedName', label: 'Full Name of Deceased', type: 'text', required: true, icon: User },
+        { name: 'dateOfDeath', label: 'Date of Death', type: 'date', required: true, icon: Calendar },
+        { name: 'placeOfDeath', label: 'Place of Death', type: 'text', required: true, icon: MapPin },
+        { name: 'deceasedNIC', label: 'Deceased\'s NIC Number', type: 'text', required: true, icon: FileText },
+        { name: 'deathRegNumber', label: 'Death Registration Number', type: 'text', required: true, icon: FileText },
+        { name: 'applicantName', label: 'Applicant\'s Full Name', type: 'text', required: true, icon: User },
+        { name: 'applicantNIC', label: 'Applicant\'s NIC Number', type: 'text', required: true, icon: FileText },
+        { name: 'relationship', label: 'Relationship to Deceased', type: 'select', required: true, icon: User, options: ['Spouse', 'Child', 'Parent', 'Sibling', 'Legal Representative', 'Other'] },
+        { name: 'phone', label: 'Contact Number', type: 'tel', required: true, icon: Phone },
+        { name: 'email', label: 'Email Address', type: 'email', required: true, icon: Mail },
+        { name: 'deceasedNICCopy', label: 'Deceased\'s NIC Copy', type: 'file', required: true, icon: Upload },
+        { name: 'applicantNICCopy', label: 'Applicant\'s NIC Copy', type: 'file', required: true, icon: Upload },
+        { name: 'medicalCertificate', label: 'Medical Certificate of Cause of Death', type: 'file', required: true, icon: Upload },
+        { name: 'authorizationLetter', label: 'Authorization Letter (if not immediate family)', type: 'file', required: false, icon: Upload }
+      ],
+      "Correction of Errors in Certificates": [
+        { name: 'certificateType', label: 'Type of Certificate', type: 'select', required: true, icon: FileText, options: ['Birth Certificate', 'Marriage Certificate', 'Death Certificate'] },
+        { name: 'certificateNumber', label: 'Certificate Registration Number', type: 'text', required: true, icon: FileText },
+        { name: 'applicantName', label: 'Applicant\'s Full Name', type: 'text', required: true, icon: User },
+        { name: 'applicantNIC', label: 'Applicant\'s NIC Number', type: 'text', required: true, icon: FileText },
+        { name: 'errorDescription', label: 'Description of Error', type: 'textarea', required: true, icon: FileText },
+        { name: 'correctInformation', label: 'Correct Information', type: 'textarea', required: true, icon: FileText },
+        { name: 'reasonForError', label: 'Reason for Error', type: 'textarea', required: true, icon: FileText },
+        { name: 'phone', label: 'Contact Number', type: 'tel', required: true, icon: Phone },
+        { name: 'email', label: 'Email Address', type: 'email', required: true, icon: Mail },
+        { name: 'originalCertificate', label: 'Original Certificate with Error', type: 'file', required: true, icon: Upload },
+        { name: 'supportingDocuments', label: 'Supporting Documents for Correction', type: 'file', required: true, icon: Upload },
+        { name: 'swornAffidavit', label: 'Sworn Affidavit', type: 'file', required: true, icon: Upload },
+        { name: 'applicantPhoto', label: 'Recent Photograph of Applicant', type: 'file', required: true, icon: FileImage }
+      ],
+      "Registration of Certificates": [
+        { name: 'eventType', label: 'Type of Event to Register', type: 'select', required: true, icon: FileText, options: ['Birth', 'Marriage', 'Death'] },
+        { name: 'eventDate', label: 'Date of Event', type: 'date', required: true, icon: Calendar },
+        { name: 'eventPlace', label: 'Place of Event', type: 'text', required: true, icon: MapPin },
+        { name: 'applicantName', label: 'Applicant\'s Full Name', type: 'text', required: true, icon: User },
+        { name: 'applicantNIC', label: 'Applicant\'s NIC Number', type: 'text', required: true, icon: FileText },
+        { name: 'relationshipToEvent', label: 'Relationship to Event', type: 'select', required: true, icon: User, options: ['Self', 'Parent', 'Spouse', 'Child', 'Legal Representative', 'Other'] },
+        { name: 'delayReason', label: 'Reason for Late Registration (if applicable)', type: 'textarea', required: false, icon: FileText },
+        { name: 'witnessName1', label: 'First Witness Full Name', type: 'text', required: true, icon: User },
+        { name: 'witnessName2', label: 'Second Witness Full Name', type: 'text', required: true, icon: User },
+        { name: 'phone', label: 'Contact Number', type: 'tel', required: true, icon: Phone },
+        { name: 'email', label: 'Email Address', type: 'email', required: true, icon: Mail },
+        { name: 'applicantNICCopy', label: 'Applicant\'s NIC Copy', type: 'file', required: true, icon: Upload },
+        { name: 'eventProofDocuments', label: 'Documents Proving Event Occurred', type: 'file', required: true, icon: Upload },
+        { name: 'witnessStatements', label: 'Witness Statements', type: 'file', required: true, icon: Upload },
+        { name: 'applicantPhoto', label: 'Recent Photograph of Applicant', type: 'file', required: true, icon: FileImage }
+      ]
+    };
+
+    return formFields[serviceName] || [];
+  };
+
   const handleServiceClick = (service: string) => {
     const hash = createServiceHash(service);
-    navigate(`/registrar-general#${hash}`);
+    setSelectedService(service);
+    window.location.hash = hash;
+    setCurrentHash(`#${hash}`);
   };
 
   const handleBackToDashboard = () => {
-    navigate('/dashboard');
+    // Navigate to dashboard - you can change this URL to match your routing setup
+    window.location.href = '/dashboard';
+    // Alternative: if using React Router, you can use navigate('/dashboard');
+  };
+
+  const handleContactSupport = () => {
+    const subject = encodeURIComponent(`Support Request - ${selectedService || 'Registrar General Services'}`);
+    const body = encodeURIComponent(`Dear Registrar General Support Team,
+
+I need assistance with: ${selectedService || 'General Inquiry'}
+
+Please provide guidance on the following:
+- 
+
+Thank you for your assistance.
+
+Best regards,`);
+    
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=registrar.support@rg.gov.lk&su=${subject}&body=${body}`;
+    window.open(gmailUrl, '_blank');
   };
 
   const handleShowAllServices = () => {
-    navigate('/registrar-general');
     setSelectedService(null);
+    window.location.hash = '';
+    setCurrentHash('');
+  };
+
+  const handleStartApplication = () => {
+    console.log('Start Application clicked for:', selectedService);
+    setShowApplicationDialog(true);
+    setFormData({});
+    setUploadedFiles({});
+  };
+
+  const handleCloseDialog = () => {
+    setShowApplicationDialog(false);
+    setFormData({});
+    setUploadedFiles({});
+  };
+
+  const handleInputChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileUpload = (name: string, file: File) => {
+    setUploadedFiles(prev => ({ ...prev, [name]: file }));
+    setFormData(prev => ({ ...prev, [name]: file }));
+  };
+
+  const handleSubmitApplication = () => {
+    alert('Application submitted successfully! You will receive a confirmation email shortly.');
+    handleCloseDialog();
+  };
+
+  const renderFormField = (field: any) => {
+    const IconComponent = field.icon;
+    
+    return (
+      <div key={field.name} className="space-y-2">
+        <label className="flex items-center text-sm font-semibold text-indigo-800">
+          <IconComponent className="w-4 h-4 mr-2 text-indigo-600" />
+          {field.label}
+          {field.required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+        
+        {field.type === 'textarea' ? (
+          <textarea
+            className="w-full px-4 py-3 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent bg-white/80 backdrop-blur-sm"
+            rows={3}
+            value={(formData[field.name] as string) || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
+            required={field.required}
+          />
+        ) : field.type === 'select' ? (
+          <select
+            className="w-full px-4 py-3 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent bg-white/80 backdrop-blur-sm"
+            value={(formData[field.name] as string) || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
+            required={field.required}
+          >
+            <option value="">Select {field.label}</option>
+            {field.options?.map((option: string) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        ) : field.type === 'file' ? (
+          <div className="space-y-2">
+            <div className="flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-indigo-300 border-dashed rounded-xl cursor-pointer bg-indigo-50/50 hover:bg-indigo-100/50 transition-colors">
+                <div className="flex flex-col items-center justify-center pt-2 pb-2">
+                  <Upload className="w-6 h-6 mb-2 text-indigo-500" />
+                  <p className="text-sm text-indigo-600">
+                    {uploadedFiles[field.name] ? uploadedFiles[field.name].name : `Upload ${field.label}`}
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(field.name, file);
+                  }}
+                  required={field.required}
+                />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <input
+            type={field.type}
+            className="w-full px-4 py-3 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent bg-white/80 backdrop-blur-sm"
+            value={(formData[field.name] as string) || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
+            required={field.required}
+          />
+        )}
+      </div>
+    );
   };
 
   return (
@@ -180,7 +392,9 @@ const RegistrarGeneralPage: React.FC<RegistrarGeneralPageProps> = ({ onLogout })
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center group">
               <div className="bg-transparent backdrop-blur-md">
-                <img src={Logo1} alt="LakSewa Logo" className="w-auto h-16 mx-auto mr-4" />
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-400 to-violet-500 rounded-2xl flex items-center justify-center mr-4">
+                  <Settings className="w-8 h-8 text-white" />
+                </div>
               </div>
               <div className="flex flex-col">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
@@ -359,13 +573,21 @@ const RegistrarGeneralPage: React.FC<RegistrarGeneralPageProps> = ({ onLogout })
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                  <button className="flex-1 bg-gradient-to-r from-indigo-400 to-violet-500 hover:from-indigo-500 hover:to-violet-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                  <button 
+                    onClick={handleStartApplication}
+                    className="flex-1 bg-gradient-to-r from-indigo-400 to-violet-500 hover:from-indigo-500 hover:to-violet-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center justify-center"
+                  >
+                    <FileText className="w-5 h-5 mr-2" />
                     Start Application
                   </button>
-                  <button className="flex-1 bg-gradient-to-r from-purple-400 to-indigo-500 hover:from-purple-500 hover:to-indigo-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                  <button className="flex-1 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
                     Download Forms
                   </button>
-                  <button className="flex-1 bg-gradient-to-r from-violet-400 to-purple-500 hover:from-violet-500 hover:to-purple-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                  <button 
+                    onClick={handleContactSupport}
+                    className="flex-1 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center justify-center"
+                  >
+                    <Mail className="w-5 h-5 mr-2" />
                     Contact Support
                   </button>
                 </div>
@@ -375,9 +597,90 @@ const RegistrarGeneralPage: React.FC<RegistrarGeneralPageProps> = ({ onLogout })
         )}
       </div>
 
-      <footer className="bg-gradient-to-r from-white/95 via-indigo-50/80 to-violet-100/60 backdrop-blur-xl border-t border-white/30 py-6 mt-12 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 text-center text-sm bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent font-semibold">
-          © {new Date().getFullYear()} Registrar General's Department. All Rights Reserved.
+      {/* Application Dialog */}
+      {showApplicationDialog && selectedService && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            {/* Dialog Header */}
+            <div className="bg-gradient-to-r from-indigo-400 to-violet-500 p-6 text-white">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-2xl font-bold">Online Application</h3>
+                  <p className="text-indigo-100">{selectedService}</p>
+                </div>
+                <button
+                  onClick={handleCloseDialog}
+                  className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            {/* Dialog Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <form onSubmit={(e) => { e.preventDefault(); handleSubmitApplication(); }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {getFormFields(selectedService).map(renderFormField)}
+                </div>
+
+                {/* Submit Section */}
+                <div className="mt-8 pt-6 border-t border-indigo-200">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200 mb-6">
+                    <h4 className="text-lg font-bold text-green-800 mb-3 flex items-center">
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Application Summary
+                    </h4>
+                    <p className="text-green-700">
+                      Please review all information before submitting. Once submitted, you will receive a confirmation email 
+                      with your application reference number and tracking details.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <button
+                      type="button"
+                      onClick={handleCloseDialog}
+                      className="flex-1 bg-gradient-to-r from-slate-400 to-gray-500 hover:from-slate-500 hover:to-gray-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 bg-gradient-to-r from-indigo-400 to-violet-500 hover:from-indigo-500 hover:to-violet-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 flex items-center justify-center"
+                    >
+                      <Send className="w-5 h-5 mr-2" />
+                      Submit Application
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced Footer */}
+      <footer className="bg-gradient-to-r from-white/95 via-indigo-50/80 to-violet-100/60 backdrop-blur-xl border-t border-white/30 py-8 mt-12 shadow-2xl">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center space-y-4">
+            <div className="text-sm bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent font-semibold">
+              © {new Date().getFullYear()} Registrar General's Department. All Rights Reserved.
+            </div>
+            <div className="flex justify-center items-center space-x-2 text-sm text-indigo-600">
+              <Mail className="w-4 h-4" />
+              <span>Support Email: </span>
+              <button
+                onClick={() => handleContactSupport()}
+                className="text-indigo-700 hover:text-indigo-900 font-semibold hover:underline transition-colors"
+              >
+                registrar.support@rg.gov.lk
+              </button>
+            </div>
+            <div className="text-xs text-indigo-500">
+              Click the email above to open Gmail with a pre-filled support request
+            </div>
+          </div>
         </div>
       </footer>
     </div>
