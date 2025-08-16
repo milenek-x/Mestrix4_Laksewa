@@ -24,12 +24,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <AppSidebar variant="inset"/>
       <SidebarInset>
         <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="flex flex-1 flex-col gap-2"> {/* Removed @container/main for broader applicability, add if specific pages need it */}
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+        <div className="flex-1 flex flex-col">
               {children} {/* This is where your page-specific content will be rendered */}
-            </div>
-          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>

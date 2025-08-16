@@ -1,20 +1,6 @@
+// src/molecules/NavUser.tsx
 "use client"
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-// Removed DropdownMenu imports as they are no longer used
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuGroup,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -32,20 +18,15 @@ export function NavUser({
 }) {
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className="bg-[#0E3A6F] text-white"> {/* Applied background and text color here */}
       <SidebarMenuItem>
-        {/* The user information block will now just be a display, not a dropdown trigger */}
         <SidebarMenuButton
           size="lg"
           className="hover:bg-transparent hover:text-inherit cursor-default"
         >
-          <Avatar className="h-8 w-8 rounded-lg grayscale">
-            <AvatarImage src={user.avatar} alt={user.name} />
-            <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-          </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-medium">{user.name}</span>
-            <span className="text-muted-foreground truncate text-xs">
+            <span className="text-white truncate text-xs">
               {user.email}
             </span>
           </div>

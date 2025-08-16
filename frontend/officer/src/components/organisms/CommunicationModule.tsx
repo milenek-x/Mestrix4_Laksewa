@@ -33,6 +33,7 @@ export interface ConversationListProps {
 
 export interface MessageDetailProps {
   conversation: Conversation | null;
+  onBack: () => void;
 }
 // --- End Type Definitions ---
 
@@ -135,20 +136,34 @@ const dummyConversations: Conversation[] = [
 ];
 
 export function CommunicationModule() {
-  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(dummyConversations[0]);
+  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(null);
   const [unreadFilter, setUnreadFilter] = React.useState<boolean>(false);
 
+  // Function to set selectedConversation to null
+  const handleBackToDefault = () => {
+    setSelectedConversation(null);
+  };
+
+  // A new handler for the unread filter switch
+  const handleToggleUnreadFilter = (checked: boolean) => {
+    // Set the unread filter state
+    setUnreadFilter(checked);
+    // Also, unselect the current conversation
+    setSelectedConversation(null);
+  };
+
   return (
-    <div className="flex h-[calc(100vh-100px)] min-h-[600px] flex-1 overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
+    <div className="flex flex-1 rounded-lg border bg-card text-card-foreground shadow-sm">
       <ConversationList
         conversations={dummyConversations}
         selectedConversation={selectedConversation}
         onSelectConversation={setSelectedConversation}
         unreadFilter={unreadFilter}
-        onToggleUnreadFilter={setUnreadFilter}
+        onToggleUnreadFilter={handleToggleUnreadFilter} // Use the new handler here
       />
       <MessageDetail
         conversation={selectedConversation}
+        onBack={handleBackToDefault}
       />
     </div>
   );

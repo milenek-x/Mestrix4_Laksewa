@@ -6,7 +6,6 @@ import {
   Routes,
 } from 'react-router';
 
-import { ThemeProvider } from './components/theme/theme-provider';
 
 import LoginPage from './components/pages/Login.tsx';
 import Dashboard from './components/pages/Dashboard.tsx';
@@ -25,7 +24,6 @@ import { UserProvider } from './components/context/UserContext.tsx';
 function App() {
   return (
     <>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <BrowserRouter>
         <UserProvider>
           <Routes>
@@ -40,7 +38,6 @@ function App() {
           </Routes>
         </UserProvider>
       </BrowserRouter>
-    </ThemeProvider>
     <Toaster position='top-center'/>
     </>
   );
