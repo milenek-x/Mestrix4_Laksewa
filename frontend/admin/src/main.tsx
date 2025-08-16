@@ -11,6 +11,9 @@ import ForgotPasswordCode from "./pages/auth/ForgotPasswordCode";
 import ForgotPasswordReset from "./pages/auth/ForgotPasswordReset";
 import Dashboard from "./pages/dashboard/Dashboard";
 import UserList from "./pages/users/UserList";
+import DepartmentList from "./pages/departments/DepartmentList";
+import ServiceList from "./pages/services/ServiceList";
+import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
   // Public / Auth routes
@@ -27,8 +30,8 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "users", element: <UserList /> },
-      { path: "departments", element: <div>Department Management</div> },
-      { path: "services", element: <div>Service Management</div> },
+      { path: "departments", element: <DepartmentList /> },
+      { path: "services", element: <ServiceList /> },
       { path: "settings", element: <div>Setting</div> },
     ],
   },
@@ -36,6 +39,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    {/* Wrap your entire application with AuthProvider */}
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>
 );
