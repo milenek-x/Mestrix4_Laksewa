@@ -7,5 +7,7 @@ namespace backend.Layers.DTOs
 
         public string? UserId { get; set; } // e.g., the ID of the authenticated user
 
+        public string? RoleId { get; set;  }
+
     }
 }
