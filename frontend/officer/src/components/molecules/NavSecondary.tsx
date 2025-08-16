@@ -4,6 +4,7 @@
 import * as React from "react"
 import { type LucideIcon } from "lucide-react"
 import { Link, useLocation } from "react-router-dom" // Import Link and useLocation
+import { cn } from "@/lib/utils"; // Import cn for conditional classNames
 
 import {
   SidebarGroup,
@@ -27,7 +28,7 @@ export function NavSecondary({
 
   return (
     <SidebarGroup {...props}>
-      <SidebarGroupContent>
+      <SidebarGroupContent className="flex flex-col gap-2 bg-[#0E3A6F]"> {/* Applied background color here */}
         <SidebarMenu>
           {items.map((item) => {
             // Determine if the current item's URL matches the current location's pathname
@@ -35,8 +36,19 @@ export function NavSecondary({
 
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild className={isSelected ? 'bg-app-login text-app-login-foreground' : 'transition-none'}>
-                  <Link to={item.url}>
+                <SidebarMenuButton
+                  asChild
+                  // Remove className from SidebarMenuButton if 'asChild' is used
+                  // and apply it directly to the Link component below
+                >
+                  <Link
+                    to={item.url}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-md transition-colors w-full",
+                      "hover:bg-white/10",
+                      isSelected ? "bg-white/10" : "bg-transparent"
+                    )}
+                  >
                     <item.icon />
                     <span>{item.title}</span>
                   </Link>

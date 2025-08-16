@@ -3,6 +3,7 @@
 
 import { type LucideIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom"; // Import Link and useLocation
+import { cn } from "@/lib/utils"; // Import cn for conditional classNames
 
 import {
   SidebarGroup,
@@ -19,13 +20,13 @@ export function NavMain({
     title: string;
     url: string;
     icon?: LucideIcon;
-  }[]; // Removed isActive from type as it will be determined dynamically
+  }[];
 }) {
   const location = useLocation(); // Get the current location
 
   return (
     <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
+      <SidebarGroupContent className="flex flex-col gap-2 bg-[#0E3A6F]"> {/* Applied background color here */}
         <SidebarMenu>
           {items.map((item) => {
             // Determine if the current item is active
@@ -36,10 +37,15 @@ export function NavMain({
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
-                  // Apply dynamic classes for active state
-                  className={isSelected ? "bg-app-login text-app-login-foreground" : "transition-none"}
                 >
-                  <Link to={item.url}>
+                  <Link
+                    to={item.url}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-md transition-colors w-full",
+                      "hover:bg-white/10 hover:text-white",
+                      isSelected ? "bg-white/10" : "bg-transparent"
+                    )}
+                  >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                   </Link>

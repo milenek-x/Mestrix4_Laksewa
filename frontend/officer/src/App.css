@@ -9,7 +9,8 @@
   width: 100%;
   height: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   
   text-align: center;
 }
@@ -125,6 +126,51 @@
   --app-form-background: oklch(18% 0.005 100.8); /* Darkened form background, slightly lighter than overall background */
 }
 
+.speech-bubble-user::after {
+  content: '';
+  position: absolute;
+  right: -8px; /* Adjust based on desired tail size and position */
+  bottom: 0px; /* Aligns with the bottom of the bubble */
+  width: 0;
+  height: 0;
+  border: 10px solid transparent; /* Size of the tail */
+  border-left-color: #0E3A6F; /* Color matching the user bubble background */
+  border-right: 0;
+  border-bottom: 0;
+  transform: translateY(-50%); /* Adjust to center vertically if needed */
+}
+
+.speech-bubble-other::after {
+  content: '';
+  position: absolute;
+  left: -8px; /* Adjust based on desired tail size and position */
+  bottom: 0px; /* Aligns with the bottom of the bubble */
+  width: 0;
+  height: 0;
+  border: 10px solid transparent; /* Size of the tail */
+  border-right-color: var(--app-login); /* Assuming bg-app-login translates to a green color, replace with actual color if different */
+  border-left: 0;
+  border-bottom: 0;
+  transform: translateY(-50%); /* Adjust to center vertically if needed */
+}
+
+/* src/app/globals.css (or wherever your global CSS is) */
+
+/* ... existing CSS ... */
+
+.custom-switch-color[data-state="checked"] {
+  background-color: #0E3A6F !important; /* Your desired color when checked */
+}
+
+/* Optional: You might also want to style the thumb for consistency */
+.custom-switch-color[data-state="checked"] > span {
+  background-color: white !important; /* Make the thumb white when checked */
+}
+
+/* Ensure default styling is not overly aggressive if you encounter issues */
+.custom-switch-color {
+  background-color: #e0e0e0; /* Default unchecked color, adjust as needed */
+}
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -197,7 +243,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-app-background text-foreground;
+    @apply bg-white text-foreground;
   }
 }
 

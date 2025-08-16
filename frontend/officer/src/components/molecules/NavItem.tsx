@@ -22,20 +22,20 @@ export const NavItem: React.FC<NavItemProps> = ({
   onClick,
 }) => {
   return (
-    // Use Button as a link, with appropriate styling based on 'isActive'
     <Button
-      asChild // Renders as its child, assuming a Router Link component
-      variant="ghost" // Or a custom variant for sidebar items
-      className={cn(
-        "w-full justify-start gap-3 py-2 px-4 rounded-lg",
-        "hover:bg-primary/10 transition-colors duration-200",
-        isActive ? "bg-app-login text-primary-foreground hover:bg-primary/90" : "text-muted-foreground"
-      )}
+      asChild
+      variant="ghost"
       onClick={onClick}
     >
-      {/* If using a router link, it would wrap the content inside Button */}
-      {/* Example with Next.js Link: <Link href={to}>...</Link> */}
-      <a href={to} className="flex items-center w-full"> {/* For basic anchor or replace with router Link */}
+      {/* For basic anchor or replace with router Link */}
+      <a
+        href={to}
+        className={cn(
+          "flex items-center gap-3 px-4 py-3 rounded-md transition-colors w-full", // Added w-full here for full width
+          "hover:bg-white/10",
+          isActive ? "bg-white/10" : "bg-transparent"
+        )}
+      >
         {icon}
         <span className="flex-grow text-left">{label}</span>
         {notificationCount && (

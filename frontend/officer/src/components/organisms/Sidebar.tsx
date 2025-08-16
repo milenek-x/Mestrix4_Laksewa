@@ -1,8 +1,7 @@
+// src/components/layout/AppSidebar.tsx
 "use client"
 
 import * as React from "react"
-// No longer need useEffect and useState here, as data is from context
-// import { useEffect, useState } from "react"
 
 import {
   BarChart,
@@ -27,10 +26,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-import { Separator } from "@/components/ui/separator"
 
 // IMPORT YOUR CUSTOM LOGO
-import Logo from '../../assets/Logo.png';
+import LogoWhite from '../../assets/Logo-White.png'
 
 // Import Link from react-router-dom
 import { Link } from "react-router-dom";
@@ -46,7 +44,6 @@ const defaultDisplayUser = {
   avatar: "/avatars/placeholder.jpg",
 };
 
-// ... (your navMainItems and navSecondaryItems remain unchanged)
 const navMainItems = [
   {
     title: "Dashboard",
@@ -101,7 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       return {
         name: `${userData.firstName} ${userData.lastName}`,
         email: userData.email,
-        avatar: "https://placehold.co/600x400?text=N/A",
+        avatar: "https://placehold.co/600x400/0E3A6F/0E3A6F?text=ME",
       };
     }
     return defaultDisplayUser; // Display "Loading..." or placeholder
@@ -112,32 +109,35 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+    <Sidebar
+      collapsible="offcanvas"
+      className="bg-[#0E3A6F] text-white"
+      {...props}
+    >
+      <SidebarHeader className="bg-[#0E3A6F]">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:!p-1.5 h-auto"
             >
-              <Link to="/dashboard">
+              <Link to="/dashboard" className="hover:bg-transparent active:bg-transparent">
                 <img
-                  src={Logo}
+                  src={LogoWhite}
                   alt="Laksewa Gov. Logo"
-                  className="!size-7 object-contain mr-2"
+                  className="w-auto h-20 object-contain mr-2"
                 />
-                <span className="text-base font-semibold">LakSewa Officer</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-[#0E3A6F]">
         <NavMain items={navMainItems} />
         <NavSecondary items={navSecondaryItems} className="mt-auto" />
       </SidebarContent>
-      <Separator className="my-4" />
-      <SidebarFooter>
+      {/* <Separator className="my-4 bg-red-500" /> */}
+      <SidebarFooter className="bg-[#0E3A6F]">
         <NavUser user={currentUserData} />
       </SidebarFooter>
     </Sidebar>
