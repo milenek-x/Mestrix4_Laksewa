@@ -96,7 +96,7 @@ const actions = [
 ];
 
 
-export default function ReviewPage() {
+export default function Page() {
   return (
     <DashboardLayout>
       <DataTable
