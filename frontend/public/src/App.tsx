@@ -12,7 +12,7 @@ import MotorTrafficPage from './components/pages/MotorTrafficPage.tsx';
 import ImmigrationEmigrationPage from './components/pages/ImmigrationEmigrationPage.tsx';
 import RegistrarGeneralPage from './components/pages/RegistrarGeneralPage.tsx';
 
-// Import ProfilePage - ADD THIS LINE
+// Import ProfilePage
 import ProfilePage from './components/pages/ProfilePage';
 
 import {
@@ -22,7 +22,6 @@ import {
   useNavigate,
   Navigate
 } from 'react-router-dom';
-// Removed useEffect import as it's not used directly in App.tsx
 
 // Wrapper components to handle navigation
 const LandingWrapper = () => {
@@ -100,9 +99,16 @@ const DashboardWrapper = () => {
   return <DashboardPage onLogout={handleLogout} />;
 };
 
-// ADD THIS NEW WRAPPER FOR PROFILE PAGE
+// ProfileWrapper with proper navigation implementation
 const ProfileWrapper = () => {
-  return <ProfilePage />;
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Navigate to landing page (root) when logout is clicked
+    navigate('/');
+  };
+
+  return <ProfilePage onLogout={handleLogout} />;
 };
 
 function App() {
@@ -117,7 +123,7 @@ function App() {
               <Route path="/register" element={<RegisterWrapper />} />
               <Route path="/dashboard" element={<DashboardWrapper />} />
 
-              {/* ADD THIS PROFILE ROUTE */}
+              {/* Profile route with proper navigation */}
               <Route path="/profile" element={<ProfileWrapper />} />
 
               {/* New routes for department pages */}

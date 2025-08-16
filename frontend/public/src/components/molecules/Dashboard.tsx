@@ -1,11 +1,54 @@
 import React, { useState } from 'react';
-import { LogOut, FileText, Users, Settings, Bell, Home, Search, User, HelpCircle, Menu, X } from 'lucide-react';
+import { LogOut, FileText, Users, Settings, Bell, Home, Search, User, HelpCircle, Menu, X, AlertTriangle } from 'lucide-react';
 import Logo1 from '../../assets/Logo.png';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 interface DashboardProps {
   onLogout: () => void;
 }
+
+// Warning Modal Component
+interface WarningModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  searchQuery: string;
+}
+
+const WarningModal: React.FC<WarningModalProps> = ({ isOpen, onClose, searchQuery }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/30 p-8 max-w-md w-full mx-4 animate-pulse">
+        <div className="flex items-center justify-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+            <AlertTriangle className="w-8 h-8 text-white" />
+          </div>
+        </div>
+        <h3 className="text-2xl font-bold text-gray-800 text-center mb-4">
+          Service Not Available
+        </h3>
+        <p className="text-gray-600 text-center mb-2">
+          Sorry, we couldn't find any service matching:
+        </p>
+        <p className="text-lg font-semibold text-amber-600 text-center mb-6 bg-amber-50 px-4 py-2 rounded-lg border border-amber-200">
+          "{searchQuery}"
+        </p>
+        <p className="text-gray-500 text-center text-sm mb-6">
+          Please try searching with different keywords or browse through our available departments and services.
+        </p>
+        <button
+          onClick={onClose}
+          className="w-full bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 
+                   text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 
+                   hover:scale-105 hover:shadow-lg"
+        >
+          Continue Browsing
+        </button>
+      </div>
+    </div>
+  );
+};
 
 // DepartmentSection component to handle individual department display
 interface DepartmentSectionProps {
@@ -77,7 +120,8 @@ const DepartmentSection: React.FC<DepartmentSectionProps> = ({ department, isRev
                   onClick={() => navigate(`/${department.id}#${createServiceHash(service)}`)}
                   className="text-gray-700 hover:text-gray-900 hover:bg-white/20 cursor-pointer text-left w-full 
                            transition-all duration-300 p-2 rounded-lg hover:scale-105 hover:shadow-lg
-                           border border-transparent hover:border-white/30 backdrop-blur-sm font-medium"
+                           border border-transparent hover:border-white/30 backdrop-blur-sm font-medium service-item"
+                  data-service-name={service}
                 >
                   • {service}
                 </button>
@@ -93,6 +137,8 @@ const DepartmentSection: React.FC<DepartmentSectionProps> = ({ department, isRev
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [searchNotFound, setSearchNotFound] = useState('');
   
   const navigate = useNavigate(); // Use proper useNavigate hook
 
@@ -173,6 +219,93 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   ];
 
+  // Search function implementation
+  const handleSearch = () => {
+    if (!searchQuery.trim()) return;
+
+    const searchTerm = searchQuery.toLowerCase();
+    
+    // Search in departments
+    const matchedDepartment = ourServicesByDepartment.find(dept => 
+      dept.department.toLowerCase().includes(searchTerm)
+    );
+
+    if (matchedDepartment) {
+      // Scroll to department
+      const element = document.getElementById(matchedDepartment.id);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+        // Add highlight effect
+        element.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-75');
+        setTimeout(() => {
+          element.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-75');
+        }, 3000);
+        return;
+      }
+    }
+
+    // Search in services
+    let foundService = false;
+    for (const dept of ourServicesByDepartment) {
+      const matchedService = dept.services.find(service => 
+        service.toLowerCase().includes(searchTerm)
+      );
+      
+      if (matchedService) {
+        // Scroll to the department containing the service
+        const element = document.getElementById(dept.id);
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+          
+          // Add highlight effect to the whole department
+          element.classList.add('ring-4', 'ring-green-400', 'ring-opacity-75');
+          
+          // Find and highlight the specific service
+          const serviceElements = element.querySelectorAll('.service-item');
+          serviceElements.forEach(serviceEl => {
+            const serviceName = serviceEl.getAttribute('data-service-name');
+            if (serviceName && serviceName.toLowerCase().includes(searchTerm)) {
+              serviceEl.classList.add('bg-green-100', 'border-green-400', 'scale-110', 'shadow-lg');
+              setTimeout(() => {
+                serviceEl.classList.remove('bg-green-100', 'border-green-400', 'scale-110', 'shadow-lg');
+              }, 3000);
+            }
+          });
+          
+          setTimeout(() => {
+            element.classList.remove('ring-4', 'ring-green-400', 'ring-opacity-75');
+          }, 3000);
+          foundService = true;
+          break;
+        }
+      }
+    }
+
+    // If no match found, show warning modal
+    if (!foundService) {
+      setSearchNotFound(searchQuery);
+      setShowWarningModal(true);
+    }
+    
+    // Clear search query after search
+    setSearchQuery('');
+  };
+
+  // Handle Enter key press in search
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   const notifications = [
     {
       id: 1,
@@ -199,6 +332,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100">
+      {/* Warning Modal */}
+      <WarningModal 
+        isOpen={showWarningModal}
+        onClose={() => setShowWarningModal(false)}
+        searchQuery={searchNotFound}
+      />
+
       {/* Enhanced Header */}
       <div className="bg-white/95 backdrop-blur-xl shadow-2xl border-b border-white/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -210,7 +350,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </div>
               <div className="flex flex-col">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hidden sm:block">
-                  Powered by Mestrix
+                  Powered by Mestrix4
                 </h1>
                 <span className="text-blue-600/80 text-sm hidden sm:block text-left">
                   Centralized Government Services
@@ -220,18 +360,27 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-6">
-              {/* Search Bar */}
+              {/* Enhanced Search Bar */}
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search services..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-80 px-4 py-2 pl-10 bg-white/80 backdrop-blur-sm border border-blue-200 rounded-full
+                  onKeyPress={handleSearchKeyPress}
+                  className="w-80 px-4 py-2 pl-10 pr-12 bg-white/80 backdrop-blur-sm border border-blue-200 rounded-full
                            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                            transition-all duration-300 shadow-lg hover:shadow-xl"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-500" />
+                <button
+                  onClick={handleSearch}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-sky-400 to-blue-500
+                           hover:from-sky-500 hover:to-blue-600 text-white p-1.5 rounded-full transition-all duration-300
+                           hover:scale-110 hover:shadow-lg"
+                >
+                  <Search className="w-3 h-3" />
+                </button>
               </div>
 
               {/* Navigation Buttons */}
@@ -300,10 +449,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   placeholder="Search services..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 bg-white/80 border border-blue-200 rounded-full
+                  onKeyPress={handleSearchKeyPress}
+                  className="w-full px-4 py-2 pl-10 pr-12 bg-white/80 border border-blue-200 rounded-full
                            focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-500" />
+                <button
+                  onClick={handleSearch}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-sky-400 to-blue-500
+                           hover:from-sky-500 hover:to-blue-600 text-white p-1.5 rounded-full transition-all duration-300"
+                >
+                  <Search className="w-3 h-3" />
+                </button>
               </div>
               <div className="space-y-2">
                 <button 
