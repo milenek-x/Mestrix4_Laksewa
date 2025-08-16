@@ -9,7 +9,7 @@ import Login from "./pages/auth/Login";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ForgotPasswordCode from "./pages/auth/ForgotPasswordCode";
 import ForgotPasswordReset from "./pages/auth/ForgotPasswordReset";
-import Roles from "./pages/roles/Role";
+import RoleList from "./pages/roles/RoleList";
 import UserList from "./pages/users/UserList";
 import DepartmentList from "./pages/departments/DepartmentList";
 import ServiceList from "./pages/services/ServiceList";
@@ -28,8 +28,8 @@ const router = createBrowserRouter([
     path: "/app",
     element: <MainLayout />,
     children: [
-      { index: true, element: <Roles /> },
-      { path: "roles", element: <Roles /> },
+      { index: true, element: <UserList /> },
+      { path: "roles", element: <RoleList /> },
       { path: "users", element: <UserList /> },
       { path: "departments", element: <DepartmentList /> },
       { path: "services", element: <ServiceList /> },
