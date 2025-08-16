@@ -4,6 +4,7 @@
 import * as React from "react";
 import { ConversationList } from "../molecules/ConversationList";
 import { MessageDetail } from "../molecules/MessageDetail";
+import { useUser } from '../context/UserContext'; // Import useUser hook
 
 // --- Type Definitions (moved here) ---
 export interface Message {
@@ -15,7 +16,7 @@ export interface Message {
 }
 
 export interface Conversation {
-  id: string;
+  id: string; // This will now represent the user's ID for grouping
   name: string;
   subject: string;
   lastMessageTeaser: string;
@@ -33,122 +34,184 @@ export interface ConversationListProps {
 
 export interface MessageDetailProps {
   conversation: Conversation | null;
+  onBack: () => void;
 }
 // --- End Type Definitions ---
 
-
-// --- Sample Data (now explicitly typed) ---
-const dummyConversations: Conversation[] = [
-  {
-    id: "conv-john",
-    name: "John Smith",
-    subject: "Passport Application Query",
-    lastMessageTeaser: "Hello, I have a question about my passport application...",
-    date: "10:30 AM",
-    detailMessages: [
-      {
-        id: "msg-john-1",
-        sender: "John Smith",
-        content: "Hello, I have a question about my passport application. The portal says I need to submit a form, but I can't find it. Can you help me?",
-        time: "10:28 AM",
-        isUser: false,
-      },
-      {
-        id: "msg-john-2",
-        sender: "You",
-        content: "Hello John. Can you please confirm the reference number of your application? I will check the status for you.",
-        time: "10:30 AM",
-        isUser: true,
-      },
-    ],
-  },
-  {
-    id: "conv-maria",
-    name: "Maria Garcia",
-    subject: "Driver's License Status",
-    lastMessageTeaser: "Is there an update on my license application?",
-    date: "Yesterday",
-    detailMessages: [
-      {
-        id: "msg-maria-1",
-        sender: "Maria Garcia",
-        content: "Hi, just following up on my driver's license application. Has there been any progress?",
-        time: "Yesterday",
-        isUser: false,
-      },
-      {
-        id: "msg-maria-2",
-        sender: "You",
-        content: "Please provide your application ID, and I can look into it for you.",
-        time: "Yesterday",
-        isUser: true,
-      },
-    ],
-  },
-  {
-    id: "conv-david",
-    name: "David Lee",
-    subject: "Document Upload Issue",
-    lastMessageTeaser: "I can't seem to upload my documents...",
-    date: "2 days ago",
-    detailMessages: [
-      {
-        id: "msg-david-1",
-        sender: "David Lee",
-        content: "I can't seem to upload my documents for the birth certificate request. The button doesn't do anything.",
-        time: "2 days ago",
-        isUser: false,
-      },
-      {
-        id: "msg-david-2",
-        sender: "You",
-        content: "Could you try clearing your browser cache or using a different browser? If the issue persists, please provide screenshots.",
-        time: "2 days ago",
-        isUser: true,
-      },
-    ],
-  },
-  {
-    id: "conv-emily",
-    name: "Emily Davis",
-    subject: "Question about Budget",
-    lastMessageTeaser: "I've reviewed the budget numbers you sent over.",
-    date: "2 days ago",
-    detailMessages: [{ id: "msg-emily-1", sender: "Emily Davis", content: "I've reviewed the budget numbers you sent over. Can we set up a quick call to discuss some potential adjustments?", time: "2 days ago", isUser: false }],
-  },
-  {
-    id: "conv-michael",
-    name: "Michael Wilson",
-    subject: "Important Announcement",
-    lastMessageTeaser: "Please join us for an all-hands meeting this Friday...",
-    date: "1 week ago",
-    detailMessages: [{ id: "msg-michael-1", sender: "Michael Wilson", content: "Please join us for an all-hands meeting this Friday at 3 PM. We have some exciting news to share about the company's future.", time: "1 week ago", isUser: false }],
-  },
-  {
-    id: "conv-sarah",
-    name: "Sarah Brown",
-    subject: "Feedback on Proposal",
-    lastMessageTeaser: "Thank you for sending over the proposal...",
-    date: "1 week ago",
-    detailMessages: [{ id: "msg-sarah-1", sender: "Sarah Brown", content: "Thank you for sending over the proposal. I've reviewed it and have some thoughts. Could we schedule a meeting to discuss my feedback in detail?", time: "1 week ago", isUser: false }],
-  },
-];
-
 export function CommunicationModule() {
-  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(dummyConversations[0]);
+  const { userData, userId } = useUser(); // Get userData and userId from UserContext
+  const [conversations, setConversations] = React.useState<Conversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(null);
   const [unreadFilter, setUnreadFilter] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // YOU_SENDER_ID will now be derived from userId from context
+  const YOU_SENDER_ID = userId; 
+
+  React.useEffect(() => {
+    const fetchCommunicationData = async () => {
+      // Only fetch if userData (and thus departmentId) is available
+      if (!userData || !userData.departmentId) {
+        setLoading(false);
+        setConversations([]); // No conversations if no department to filter by
+        return;
+      }
+
+      const currentUserDepartmentId = userData.departmentId;
+
+      try {
+        setLoading(true);
+
+        // Fetch all necessary data
+        const [
+          conversationsResponse,
+          messagesResponse,
+          usersResponse,
+          serviceRequestsResponse,
+          servicesResponse, // Fetch services data
+        ] = await Promise.all([
+          fetch("http://localhost:5102/api/Conversation"),
+          fetch("http://localhost:5102/api/Message"),
+          fetch("http://localhost:5102/api/User"),
+          fetch("http://localhost:5102/api/ServiceRequest"),
+          fetch("http://localhost:5102/api/Service"), // New API call
+        ]);
+
+        if (!conversationsResponse.ok) throw new Error(`HTTP error! status: ${conversationsResponse.status} for conversations`);
+        if (!messagesResponse.ok) throw new Error(`HTTP error! status: ${messagesResponse.status} for messages`);
+        if (!usersResponse.ok) throw new Error(`HTTP error! status: ${usersResponse.status} for users`);
+        if (!serviceRequestsResponse.ok) throw new Error(`HTTP error! status: ${serviceRequestsResponse.status} for service requests`);
+        if (!servicesResponse.ok) throw new Error(`HTTP error! status: ${servicesResponse.status} for services`); // Error handling for services
+
+        const conversationsData: any[] = await conversationsResponse.json();
+        const messagesData: any[] = await messagesResponse.json();
+        const usersData: any[] = await usersResponse.json();
+        const serviceRequestsData: any[] = await serviceRequestsResponse.json();
+        const servicesData: any[] = await servicesResponse.json(); // Get services data
+
+        const usersMap = new Map(usersData.map(user => [user.id, user]));
+        const serviceRequestsMap = new Map(serviceRequestsData.map(sr => [sr.id, sr]));
+        const servicesMap = new Map(servicesData.map(service => [service.id, service])); // Map services by ID
+        const conversationsByIdMap = new Map(conversationsData.map(conv => [conv.id, conv]));
+
+        // Map to hold grouped conversations, keyed by sender's user ID
+        const groupedConversations = new Map<string, Conversation>();
+
+        // Process messages and group them by the sender (user)
+        // Sort messages in descending order of timestamp for correct 'lastMessageTeaser' and 'date'
+        messagesData.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .forEach((msg) => {
+            const conversationMeta = conversationsByIdMap.get(msg.conversationId);
+            if (!conversationMeta) return; // Skip if no matching conversation meta found
+
+            const serviceRequest = serviceRequestsMap.get(conversationMeta.serviceRequestId);
+            const service = serviceRequest ? servicesMap.get(serviceRequest.serviceId) : null;
+
+            // Filter logic: Only include conversations related to the current user's department
+            if (!service || service.departmentId !== currentUserDepartmentId) {
+              return; // Skip if service is not in the current user's department
+            }
+
+            const requestedByUser = serviceRequest ? usersMap.get(serviceRequest.requestedById) : null;
+            const senderUser = usersMap.get(msg.senderId);
+
+            const groupingKey = requestedByUser ? requestedByUser.id : msg.senderId;
+
+            const senderName = msg.senderId === YOU_SENDER_ID
+              ? "You"
+              : (senderUser ? `${senderUser.firstName} ${senderUser.lastName}` : `Unknown User (${msg.senderId.substring(0, 4)})`);
+
+            const message: Message = {
+              id: msg.id,
+              sender: senderName,
+              content: msg.messageText,
+              time: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isUser: msg.senderId === YOU_SENDER_ID,
+            };
+
+            if (groupedConversations.has(groupingKey)) {
+              const existingConv = groupedConversations.get(groupingKey)!;
+              // Add message to existing conversation's detailMessages
+              // Note: messagesData was sorted descending, so add to beginning to keep internal order ascending
+              existingConv.detailMessages.unshift(message); 
+              // Update last message teaser and date only if this is the most recent message for the group
+              // (which it will be if messagesData was sorted correctly and we're processing in order)
+              existingConv.lastMessageTeaser = message.content;
+              existingConv.date = message.time;
+
+            } else {
+              // Create a new conversation entry for this user
+              const conversationName = requestedByUser ? `${requestedByUser.firstName} ${requestedByUser.lastName}` : senderName;
+              const subject = service ? `${service.name} Request` : `Conversation with ${conversationName}`; // Use service name as subject
+              
+              groupedConversations.set(groupingKey, {
+                id: groupingKey,
+                name: conversationName,
+                subject: subject,
+                lastMessageTeaser: message.content,
+                date: message.time,
+                detailMessages: [message],
+              });
+            }
+          });
+
+        const finalConversations = Array.from(groupedConversations.values()).sort((a, b) => {
+            // Sort conversations by the date of their last message (most recent first)
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+            return dateB - dateA;
+        });
+
+        setConversations(finalConversations);
+      } catch (e: any) {
+        console.error("Failed to fetch communication data:", e);
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Trigger fetch when userData (and thus departmentId) becomes available or changes
+    fetchCommunicationData();
+  }, [userData]); // Dependency on userData
+
+  // Function to set selectedConversation to null
+  const handleBackToDefault = () => {
+    setSelectedConversation(null);
+  };
+
+  // A new handler for the unread filter switch
+  const handleToggleUnreadFilter = (checked: boolean) => {
+    setUnreadFilter(checked);
+    setSelectedConversation(null);
+  };
+
+  if (loading) {
+    return <div className="flex flex-1 items-center justify-center text-lg">Loading conversations... ⏳</div>;
+  }
+
+  if (error) {
+    return <div className="flex flex-1 items-center justify-center text-lg text-red-500">Error: {error} 🙁</div>;
+  }
+
+  if (!userData || !userData.departmentId) {
+    return <div className="flex flex-1 items-center justify-center text-lg">Please log in to view department-specific conversations.</div>;
+  }
+
 
   return (
-    <div className="flex h-[calc(100vh-100px)] min-h-[600px] flex-1 overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
+    <div className="flex flex-1 rounded-lg border bg-card text-card-foreground shadow-sm">
       <ConversationList
-        conversations={dummyConversations}
+        conversations={conversations}
         selectedConversation={selectedConversation}
         onSelectConversation={setSelectedConversation}
         unreadFilter={unreadFilter}
-        onToggleUnreadFilter={setUnreadFilter}
+        onToggleUnreadFilter={handleToggleUnreadFilter}
       />
       <MessageDetail
         conversation={selectedConversation}
+        onBack={handleBackToDefault}
       />
     </div>
   );
