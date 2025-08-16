@@ -15,15 +15,18 @@ type User = {
 };
 
 // demo data (replace with API later)
-const SEED: User[] = Array.from({ length: 10 }).map((_, i) => ({
-  id: String(i + 1),
-  fullName: "John Robert",
-  username: "john29",
-  email: "john@gmail.com",
-  phone: "+94702581212",
-  role: "Admin",
-  department: "Health",
-}));
+const SEED: User[] = [
+  { id: "1", fullName: "Adithya Rosayru", username: "adithya", email: "adithya@laksewa.gov.lk", phone: "+94712345670", role: "Admin", department: "ICT" },
+  { id: "2", fullName: "Sathsara Perera", username: "sathsarya", email: "sathsarya@laksewa.gov.lk", phone: "+94712345671", role: "Officer", department: "Health" },
+  { id: "3", fullName: "Sithija Fernando", username: "sithija", email: "sithija@laksewa.gov.lk", phone: "+94712345672", role: "Supervisor", department: "Transport" },
+  { id: "4", fullName: "Shamal Jayasinghe", username: "shamal", email: "shamal@laksewa.gov.lk", phone: "+94712345673", role: "Admin", department: "Education" },
+  { id: "5", fullName: "Nimali Ranasinghe", username: "nimali", email: "nimali@laksewa.gov.lk", phone: "+94712345674", role: "Officer", department: "Agriculture" },
+  { id: "6", fullName: "Kasun Weerasinghe", username: "kasunw", email: "kasunw@laksewa.gov.lk", phone: "+94712345675", role: "Clerk", department: "Finance" },
+  { id: "7", fullName: "Ishara Wickramasinghe", username: "isharaw", email: "isharaw@laksewa.gov.lk", phone: "+94712345676", role: "Supervisor", department: "Health" },
+  { id: "8", fullName: "Tharindu Silva", username: "tharindu", email: "tharindu@laksewa.gov.lk", phone: "+94712345677", role: "Officer", department: "ICT" },
+  { id: "9", fullName: "Madhavi Gunasekara", username: "madhavi", email: "madhavi@laksewa.gov.lk", phone: "+94712345678", role: "Clerk", department: "Transport" },
+  { id: "10", fullName: "Chanuka Dissanayake", username: "chanuka", email: "chanuka@laksewa.gov.lk", phone: "+94712345679", role: "Admin", department: "Revenue" },
+];
 
 export default function UserList() {
   const [q, setQ] = useState("");
@@ -54,8 +57,8 @@ export default function UserList() {
   return (
     <div className="space-y-4">
       {/* top actions */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="relative w-full max-w-md">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-60" />
           <input
             value={q}
