@@ -33,6 +33,7 @@ function App() {
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/review" element={<Review />} />
             <Route path="/communication" element={<Communication />} />
+            <Route path="/analytics/:type" element={<Analytics />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/account" element={<Settings />} />
           </Routes>

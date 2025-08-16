@@ -76,7 +76,7 @@ export function LoginForm({
           const roleData = await roleResponse.json();
           const roleName = roleData.roleName; // Assuming the role API returns 'roleName'
 
-          if (roleName === "Department Head") {
+          if (roleName.endsWith("Head")) {
             toast.success("Login successful! Redirecting...");
             setUserId(userId);
             navigate("/dashboard");

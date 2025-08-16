@@ -1,56 +1,103 @@
-// app/settings/page.tsx
-import DashboardLayout from "../templates/DashboardLayout";
+// src/pages/Analytics.tsx
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import DepartmentAnalyticsTemplate from '../templates/DepartmentAnalyticsTemplate';
+import DashboardLayout from '../templates/DashboardLayout';
 
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+interface Department {
+  id: string;
+  departmentName: string;
+}
 
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
+// Helper function to create a URL-friendly slug from the department name
+const createSlug = (name: string): string => {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+};
 
-const chartConfig = {
-  "Requests": { // Key must match the dataKey of your Bar component
-    label: "Services",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig
+const Analytics = () => {
+  const { type } = useParams();
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
 
-const chartData = [
-  { "Service": "Passport Renewal", "Requests": 450 },
-  { "Service": "Driver's License Application", "Requests": 380 },
-  { "Service": "Birth Certificate Request", "Requests": 320 },
-  { "Service": "Tax Filing Assistance", "Requests": 290 },
-  { "Service": "Property Deed Registration", "Requests": 250 },
-  { "Service": "Vehicle Registration", "Requests": 210 },
-  { "Service": "Medical Report Submission", "Requests": 180 },
-  { "Service": "Deed Verification", "Requests": 150 },
-  { "Service": "Pension Fund Inquiry", "Requests": 120 },
-  { "Service": "Business Registration", "Requests": 90 },
-];
+  useEffect(() => {
+    console.log("Current URL parameter 'type':", type);
+    
+    // Fetch department data dynamically from the API
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch('http://localhost:5102/api/Department');
+        if (!response.ok) {
+          throw new Error('Failed to fetch departments');
+        }
+        const data: Department[] = await response.json();
+        setDepartments(data);
+        console.log("Successfully fetched departments:", data);
+      } catch (err) {
+        console.error('Error fetching departments:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-export default function Page() {
+    fetchDepartments();
+  }, [type]);
+
+  // Handle loading state
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full text-gray-600">
+          <p>Loading departments...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full text-red-500">
+          <p>Error: Could not load department data. Please check the API.</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Find the department that matches the URL slug
+  const selectedDepartment = departments.find(dept => {
+    const slug = createSlug(dept.departmentName);
+    // Check if the generated slug includes the URL parameter for a more flexible match
+    console.log(`Checking department: ${dept.departmentName} (Slug: ${slug}) against URL type: ${type}`);
+    return slug.includes(type || '');
+  });
+
+  console.log("Selected Department:", selectedDepartment);
+
+  // If a department is found, render the analytics template with its ID and name
+  if (selectedDepartment) {
+    return <DepartmentAnalyticsTemplate departmentId={selectedDepartment.id} departmentName={selectedDepartment.departmentName} />;
+  }
+
+  // Default content to display if no specific analytics type is provided or found
   return (
     <DashboardLayout>
-      <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-      <BarChart accessibilityLayer data={chartData}>
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="Service"
-          tickLine={false}
-          tickMargin={10}
-          axisLine={false}
-          tickFormatter={(value) => value.slice(0, 3)}
-        />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
-        {/* Corrected fill property */}
-        <Bar dataKey="Requests" fill="var(--color-Requests)" radius={4} />
-      </BarChart>
-    </ChartContainer>
+      <div className="flex flex-col items-center justify-center h-full text-gray-600">
+        <p className="text-xl font-semibold mb-4">📊 Select an Analytics Report</p>
+        <p className="text-center">Please choose a department from the navigation to view its specific analytics dashboard.</p>
+        {/* Dynamic links for quick navigation */}
+        <div className="mt-6 space-x-4">
+          {departments.map(dept => (
+            <a key={dept.id} href={`/analytics/${createSlug(dept.departmentName)}`} className="text-blue-500 hover:underline">
+              {dept.departmentName}
+            </a>
+          ))}
+        </div>
+      </div>
     </DashboardLayout>
   );
-}
+};
+
+export default Analytics;
